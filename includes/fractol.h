@@ -46,14 +46,15 @@ typedef struct s_fractol {
     int max_iter;
     int win_width;
     int win_height;
-    int offset_x;
-    int offset_y;
+    double offset_x;
+    double offset_y;
 } t_fractol;
 
 void    write_error(char *msg);
 double  parse_double(const char *value);
 void    init_values(t_fractol *fractol);
 void    debug_print(t_fractol *fractol);
+void    apply_zoom(t_fractol *fractol, double factor, double anchor_x, double anchor_y);
 void    key_hook(mlx_key_data_t keydata, void *param);
 void    close_hook(void *param);
 void    scroll_hook(double xdelta, double ydelta, void *param);

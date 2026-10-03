@@ -84,8 +84,8 @@ void init_values(t_fractol *fractol)
     fractol->win_width = WIN_WIDTH;
     fractol->win_height = WIN_HEIGHT;
     fractol->zoom = 1.0;
-    fractol->offset_x = 0;
-    fractol->offset_y = 0;
+    fractol->offset_x = 0.0;
+    fractol->offset_y = 0.0;
     fractol->max_iter = MAX_ITER;
     fractol->iterations = MAX_ITER;
     fractol->color_shift = 0;
@@ -106,8 +106,8 @@ void debug_print(t_fractol *fractol)
     printf("julia_x     : %f\n", fractol->julia_x);
     printf("julia_y     : %f\n", fractol->julia_y);
     printf("zoom        : %f\n", fractol->zoom);
-    printf("offset_x    : %d\n", fractol->offset_x);
-    printf("offset_y    : %d\n", fractol->offset_y);
+    printf("offset_x    : %f\n", fractol->offset_x);
+    printf("offset_y    : %f\n", fractol->offset_y);
     printf("max_iter    : %d\n", fractol->max_iter);
     printf("iterations  : %d\n", fractol->iterations);
     printf("color_shift : %d\n", fractol->color_shift);
@@ -117,6 +117,26 @@ void debug_print(t_fractol *fractol)
     printf("img         : %p\n", (void *)fractol->img);
     printf("---------------------\n");
     fflush(stdout);
+}
+
+void apply_zoom(t_fractol *fractol, double factor, double anchor_x, double anchor_y)
+{
+    double  new_zoom;
+    double  eff;
+    double  cx;
+    double  cy;
+
+    new_zoom = fractol->zoom * factor;
+    if (new_zoom < ZOOM_MIN)
+        new_zoom = ZOOM_MIN;
+    if (new_zoom > ZOOM_MAX)
+        new_zoom = ZOOM_MAX;
+    eff = new_zoom / fractol->zoom;
+    cx = fractol->win_width / 2.0;
+    cy = fractol->win_height / 2.0;
+    fractol->offset_x = fractol->offset_x * eff + (anchor_x - cx) * (1.0 - eff);
+    fractol->offset_y = fractol->offset_y * eff + (anchor_y - cy) * (1.0 - eff);
+    fractol->zoom = new_zoom;
 }
 
 void key_hook(mlx_key_data_t keydata, void *param)
@@ -143,19 +163,17 @@ void key_hook(mlx_key_data_t keydata, void *param)
         fractol->offset_x += MOVE_STEP;
     else if (keydata.key == MLX_KEY_KP_ADD || keydata.key == MLX_KEY_EQUAL)
     {
-        fractol->zoom *= ZOOM_FACTOR;
-        if (fractol->zoom > ZOOM_MAX)
-            fractol->zoom = ZOOM_MAX;
+        apply_zoom(fractol, ZOOM_FACTOR,
+            fractol->win_width / 2.0, fractol->win_height / 2.0);
     }
     else if (keydata.key == MLX_KEY_KP_SUBTRACT || keydata.key == MLX_KEY_MINUS)
     {
-        fractol->zoom /= ZOOM_FACTOR;
-        if (fractol->zoom < ZOOM_MIN)
-            fractol->zoom = ZOOM_MIN;
+        apply_zoom(fractol, 1.0 / ZOOM_FACTOR,
+            fractol->win_width / 2.0, fractol->win_height / 2.0);
     }
     else
         return ;
-    printf("[hook] key %d action %d -> offset (%d, %d) zoom %f\n",
+    printf("[hook] key %d action %d -> offset (%f, %f) zoom %f\n",
         keydata.key, keydata.action,
         fractol->offset_x, fractol->offset_y, fractol->zoom);
     debug_print(fractol);
@@ -174,26 +192,19 @@ void close_hook(void *param)
 void scroll_hook(double xdelta, double ydelta, void *param)
 {
     t_fractol *fractol;
+    double      factor;
 
     (void)xdelta;
     fractol = (t_fractol *)param;
     if (ydelta == 0)
         return ;
     mlx_get_mouse_pos(fractol->mlx, &fractol->mouse_x, &fractol->mouse_y);
-    if (ydelta > 0)
-    {
-        fractol->zoom *= ZOOM_FACTOR;
-        if (fractol->zoom > ZOOM_MAX)
-            fractol->zoom = ZOOM_MAX;
-    }
-    else
-    {
-        fractol->zoom /= ZOOM_FACTOR;
-        if (fractol->zoom < ZOOM_MIN)
-            fractol->zoom = ZOOM_MIN;
-    }
-    printf("[hook] scroll y %f -> zoom %f at mouse (%d, %d)\n",
-        ydelta, fractol->zoom, fractol->mouse_x, fractol->mouse_y);
+    factor = pow(ZOOM_FACTOR, ydelta);
+    apply_zoom(fractol, factor,
+        (double)fractol->mouse_x, (double)fractol->mouse_y);
+    printf("[hook] scroll y %f -> zoom %f offset (%f, %f) at mouse (%d, %d)\n",
+        ydelta, fractol->zoom, fractol->offset_x, fractol->offset_y,
+        fractol->mouse_x, fractol->mouse_y);
     debug_print(fractol);
 }
 
