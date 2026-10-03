@@ -6,13 +6,17 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/03 19:38:53 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/03 19:53:15 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/fractol.h"
 
-void write_error(char *msg) {
+#include <errno.h>
+#include <math.h>
+
+void write_error(char *msg)
+{
     write(1, BOLD_RED , ft_strlen(BOLD_RED));
     if (!msg)
         write(2, "FATAL ERROR", ft_strlen("FATAL ERROR"));
@@ -23,25 +27,64 @@ void write_error(char *msg) {
     exit(1);
 }
 
-int main(int argc, const char **argv) {
-    t_fractol fractol;
-    if (argc < 2) {
-        write_error("Usage: ./fractol Julia, Mandelbrot");
+double parse_double(const char *value)
+{
+    double  number;
+    double  divisor;
+    int     sign;
+    int     i;
+    int     has_digits;
+
+    if (!value || value[0] == '\0') {
+        write_error("Usage: ./fractol Mandelbrot | ./fractol Julia <real> <imaginary>");
     }
-    if (argc == 2) {
-        if (ft_strcmp(argv[1], "Mandelbrot") != 0) {
-            write_error("Usage: ./fractol Julia, Mandelbrot");
+    number = 0.0;
+    divisor = 1.0;
+    sign = 1;
+    i = 0;
+    has_digits = 0;
+    while (value[i] == ' ' || (value[i] >= '\t' && value[i] <= '\r'))
+        i++;
+    if (value[i] == '-' || value[i] == '+') {
+        if (value[i] == '-')
+            sign = -1;
+        i++;
+    }
+    while (value[i] >= '0' && value[i] <= '9') {
+        number = number * 10.0 + (value[i] - '0');
+        has_digits = 1;
+        i++;
+    }
+    if (value[i] == '.') {
+        i++;
+        while (value[i] >= '0' && value[i] <= '9') {
+            number = number * 10.0 + (value[i] - '0');
+            divisor *= 10.0;
+            has_digits = 1;
+            i++;
         }
+        number /= divisor;
+    }
+    number *= sign;
+    if (!has_digits || value[i] != '\0' || !isfinite(number)) {
+        write_error("Usage: ./fractol Mandelbrot | ./fractol Julia <real> <imaginary>");
+    }
+
+    return (number);
+}
+int main(int argc, const char **argv)
+{
+    t_fractol  fractol;
+
+    if (argc == 2 && ft_strcmp((char *)argv[1], "Mandelbrot") == 0)
         fractol.type = MANDELBROT;
-    }
-    if (argc == 4) {
-        if (ft_strcmp(argv[1], "Julia") != 0) {
-            write_error("Usage: ./fractol Julia, Mandelbrot");
-        }
+    else if (argc == 4 && ft_strcmp((char *)argv[1], "Julia") == 0)
+    {
         fractol.type = JULIA;
+        fractol.julia_x = parse_double(argv[2]);
+        fractol.julia_y = parse_double(argv[3]);
     }
-    else {
-        write_error("Usage: ./fractol Julia, Mandelbrot");
-    }
+    else
+        write_error("Usage: ./fractol Mandelbrot | ./fractol Julia <real> <imaginary>");
     return (0);
 }
