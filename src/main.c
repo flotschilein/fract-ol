@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/03 21:07:11 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/03 21:30:36 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ void init_values(t_fractol *fractol)
     fractol->max_iter = MAX_ITER;
     fractol->iterations = MAX_ITER;
     fractol->color_shift = 0;
+    fractol->auto_color = false;
     fractol->mouse_x = 0;
     fractol->mouse_y = 0;
 }
@@ -111,6 +112,7 @@ void debug_print(t_fractol *fractol)
     printf("max_iter    : %d\n", fractol->max_iter);
     printf("iterations  : %d\n", fractol->iterations);
     printf("color_shift : %d\n", fractol->color_shift);
+    printf("auto_color  : %d\n", fractol->auto_color);
     printf("mouse       : (%d, %d)\n", fractol->mouse_x, fractol->mouse_y);
     printf("win         : %dx%d\n", fractol->win_width, fractol->win_height);
     printf("mlx         : %p\n", (void *)fractol->mlx);
@@ -171,12 +173,45 @@ void key_hook(mlx_key_data_t keydata, void *param)
         apply_zoom(fractol, 1.0 / ZOOM_FACTOR,
             fractol->win_width / 2.0, fractol->win_height / 2.0);
     }
+    else if (keydata.key == MLX_KEY_C)
+    {
+        if (keydata.modifier & MLX_SHIFT)
+            fractol->color_shift -= 1;
+        else
+            fractol->color_shift += 1;
+    }
+    else if (keydata.key == MLX_KEY_V)
+    {
+        if (keydata.action != MLX_PRESS)
+            return ;
+        fractol->auto_color = !fractol->auto_color;
+    }
     else
         return ;
-    printf("[hook] key %d action %d -> offset (%f, %f) zoom %f\n",
+    printf("[hook] key %d action %d -> offset (%f, %f) zoom %f color %d auto %d\n",
         keydata.key, keydata.action,
-        fractol->offset_x, fractol->offset_y, fractol->zoom);
+        fractol->offset_x, fractol->offset_y, fractol->zoom,
+        fractol->color_shift, fractol->auto_color);
     debug_print(fractol);
+}
+
+void loop_hook(void *param)
+{
+    t_fractol       *fractol;
+    static int      frame;
+
+    fractol = (t_fractol *)param;
+    if (!fractol->auto_color)
+    {
+        frame = 0;
+        return ;
+    }
+    frame++;
+    if (frame >= AUTO_COLOR_EVERY_N_FRAMES)
+    {
+        frame = 0;
+        fractol->color_shift += 1;
+    }
 }
 
 void close_hook(void *param)
@@ -241,6 +276,7 @@ int main(int argc, const char **argv)
     mlx_close_hook(fractol.mlx, close_hook, &fractol);
     mlx_scroll_hook(fractol.mlx, scroll_hook, &fractol);
     mlx_cursor_hook(fractol.mlx, cursor_hook, &fractol);
+    mlx_loop_hook(fractol.mlx, loop_hook, &fractol);
     mlx_loop(fractol.mlx);
     mlx_terminate(fractol.mlx);
     return (0);

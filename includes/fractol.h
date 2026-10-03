@@ -6,13 +6,14 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:10:18 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/03 21:06:34 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/03 21:30:32 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FRACTOL_H
 # define FRACTOL_H
 
+# include <stdbool.h>
 # include <unistd.h>
 
 # include "colors.h"
@@ -26,6 +27,7 @@
 # define ZOOM_FACTOR 1.1
 # define ZOOM_MIN 0.1
 # define ZOOM_MAX 1e6
+# define AUTO_COLOR_EVERY_N_FRAMES 10
 
 typedef enum s_fractol_type {
     MANDELBROT,
@@ -42,6 +44,7 @@ typedef struct s_fractol {
     int mouse_x;
     int mouse_y;
     int color_shift;
+    bool auto_color;
     int iterations;
     int max_iter;
     int win_width;
@@ -59,5 +62,6 @@ void    key_hook(mlx_key_data_t keydata, void *param);
 void    close_hook(void *param);
 void    scroll_hook(double xdelta, double ydelta, void *param);
 void    cursor_hook(double xpos, double ypos, void *param);
+void    loop_hook(void *param);
 
 #endif
