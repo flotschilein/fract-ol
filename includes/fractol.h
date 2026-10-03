@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:10:18 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/03 21:04:12 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/03 21:06:34 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,5 +56,7 @@ void    init_values(t_fractol *fractol);
 void    debug_print(t_fractol *fractol);
 void    key_hook(mlx_key_data_t keydata, void *param);
 void    close_hook(void *param);
+void    scroll_hook(double xdelta, double ydelta, void *param);
+void    cursor_hook(double xpos, double ypos, void *param);
 
 #endif

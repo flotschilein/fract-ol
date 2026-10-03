@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/03 21:04:21 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/03 21:07:11 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,6 +171,41 @@ void close_hook(void *param)
     mlx_close_window(fractol->mlx);
 }
 
+void scroll_hook(double xdelta, double ydelta, void *param)
+{
+    t_fractol *fractol;
+
+    (void)xdelta;
+    fractol = (t_fractol *)param;
+    if (ydelta == 0)
+        return ;
+    mlx_get_mouse_pos(fractol->mlx, &fractol->mouse_x, &fractol->mouse_y);
+    if (ydelta > 0)
+    {
+        fractol->zoom *= ZOOM_FACTOR;
+        if (fractol->zoom > ZOOM_MAX)
+            fractol->zoom = ZOOM_MAX;
+    }
+    else
+    {
+        fractol->zoom /= ZOOM_FACTOR;
+        if (fractol->zoom < ZOOM_MIN)
+            fractol->zoom = ZOOM_MIN;
+    }
+    printf("[hook] scroll y %f -> zoom %f at mouse (%d, %d)\n",
+        ydelta, fractol->zoom, fractol->mouse_x, fractol->mouse_y);
+    debug_print(fractol);
+}
+
+void cursor_hook(double xpos, double ypos, void *param)
+{
+    t_fractol *fractol;
+
+    fractol = (t_fractol *)param;
+    fractol->mouse_x = (int)xpos;
+    fractol->mouse_y = (int)ypos;
+}
+
 int main(int argc, const char **argv)
 {
     t_fractol  fractol;
@@ -193,6 +228,8 @@ int main(int argc, const char **argv)
     debug_print(&fractol);
     mlx_key_hook(fractol.mlx, key_hook, &fractol);
     mlx_close_hook(fractol.mlx, close_hook, &fractol);
+    mlx_scroll_hook(fractol.mlx, scroll_hook, &fractol);
+    mlx_cursor_hook(fractol.mlx, cursor_hook, &fractol);
     mlx_loop(fractol.mlx);
     mlx_terminate(fractol.mlx);
     return (0);
