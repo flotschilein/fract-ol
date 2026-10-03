@@ -6,7 +6,12 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:10:18 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/03 19:10:19 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/03 19:25:48 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
+
+#include "colors.h"
+
+#include "../Libft/libft.h"
