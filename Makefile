@@ -3,10 +3,10 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror
 
 SRC_DIR = src/
-LIBFT_DIR = libft/
+LIBFT_DIR = Libft/
 MLX42_DIR = mlx42/
 MLX42_REPO = https://github.com/codam-coding-college/MLX42.git
-INCLUDES = -I include/ -I $(LIBFT_DIR) -I $(MLX42_DIR)include/
+INCLUDES = -I includes/ -I $(LIBFT_DIR) -I $(MLX42_DIR)include/
 
 SRC = $(SRC_DIR)main.c
 
@@ -39,7 +39,7 @@ $(MLX42_LIB):
 	cmake --build $(MLX42_DIR)build
 
 clone_mlx42:
-	@if [ ! -d "$(MLX42_DIR).git" ]; then \
+	@if [ ! -d "$(MLX42_DIR)/.git" ]; then \
 	   echo "Cloning MLX42 library..."; \
 	   git clone $(MLX42_REPO) $(MLX42_DIR); \
 	else \
@@ -51,11 +51,11 @@ clone_mlx42:
 
 clean:
 	make -C $(LIBFT_DIR) clean
-	rm -rf $(OBJ) $(MLX42_DIR)
+	rm -rf $(OBJ) $(MLX42_DIR)build
 
 fclean: clean
 	make -C $(LIBFT_DIR) fclean
-	rm -rf $(NAME) $(MLX42_DIR)
+	rm -rf $(NAME)
 
 re: fclean all
 

@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/03 19:53:15 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/03 20:07:07 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,23 @@ double parse_double(const char *value)
 
     return (number);
 }
+
+void init_values(t_fractol *fractol)
+{
+    fractol->mlx = NULL;
+    fractol->img = NULL;
+    fractol->win_width = WIN_WIDTH;
+    fractol->win_height = WIN_HEIGHT;
+    fractol->zoom = 1.0;
+    fractol->offset_x = 0;
+    fractol->offset_y = 0;
+    fractol->max_iter = MAX_ITER;
+    fractol->iterations = MAX_ITER;
+    fractol->color_shift = 0;
+    fractol->mouse_x = 0;
+    fractol->mouse_y = 0;
+}
+
 int main(int argc, const char **argv)
 {
     t_fractol  fractol;
@@ -86,5 +103,12 @@ int main(int argc, const char **argv)
     }
     else
         write_error("Usage: ./fractol Mandelbrot | ./fractol Julia <real> <imaginary>");
+    init_values(&fractol);
+    fractol.mlx = mlx_init(fractol.win_width, fractol.win_height,
+            "fract-ol", false);
+    if (!fractol.mlx)
+        write_error("mlx_init failed");
+    mlx_loop(fractol.mlx);
+    mlx_terminate(fractol.mlx);
     return (0);
 }
