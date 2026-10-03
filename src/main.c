@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/03 20:07:07 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/03 20:54:01 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include <errno.h>
 #include <math.h>
+#include <stdio.h>
 
 void write_error(char *msg)
 {
@@ -77,6 +78,9 @@ void init_values(t_fractol *fractol)
 {
     fractol->mlx = NULL;
     fractol->img = NULL;
+    fractol->type = MANDELBROT;
+    fractol->julia_x = 0.0;
+    fractol->julia_y = 0.0;
     fractol->win_width = WIN_WIDTH;
     fractol->win_height = WIN_HEIGHT;
     fractol->zoom = 1.0;
@@ -89,10 +93,60 @@ void init_values(t_fractol *fractol)
     fractol->mouse_y = 0;
 }
 
+void debug_print(t_fractol *fractol)
+{
+    const char *type_str;
+
+    if (fractol->type == MANDELBROT)
+        type_str = "Mandelbrot";
+    else
+        type_str = "Julia";
+    printf("--- fractol debug ---\n");
+    printf("type        : %s (%d)\n", type_str, fractol->type);
+    printf("julia_x     : %f\n", fractol->julia_x);
+    printf("julia_y     : %f\n", fractol->julia_y);
+    printf("zoom        : %f\n", fractol->zoom);
+    printf("offset_x    : %d\n", fractol->offset_x);
+    printf("offset_y    : %d\n", fractol->offset_y);
+    printf("max_iter    : %d\n", fractol->max_iter);
+    printf("iterations  : %d\n", fractol->iterations);
+    printf("color_shift : %d\n", fractol->color_shift);
+    printf("mouse       : (%d, %d)\n", fractol->mouse_x, fractol->mouse_y);
+    printf("win         : %dx%d\n", fractol->win_width, fractol->win_height);
+    printf("mlx         : %p\n", (void *)fractol->mlx);
+    printf("img         : %p\n", (void *)fractol->img);
+    printf("---------------------\n");
+    fflush(stdout);
+}
+
+void key_hook(mlx_key_data_t keydata, void *param)
+{
+    t_fractol *fractol;
+
+    fractol = (t_fractol *)param;
+    if (keydata.key == MLX_KEY_ESCAPE && keydata.action == MLX_PRESS)
+    {
+        printf("[hook] ESC pressed, closing window\n");
+        debug_print(fractol);
+        mlx_close_window(fractol->mlx);
+    }
+}
+
+void close_hook(void *param)
+{
+    t_fractol *fractol;
+
+    fractol = (t_fractol *)param;
+    printf("[hook] window X button pressed, closing\n");
+    debug_print(fractol);
+    mlx_close_window(fractol->mlx);
+}
+
 int main(int argc, const char **argv)
 {
     t_fractol  fractol;
 
+    init_values(&fractol);
     if (argc == 2 && ft_strcmp((char *)argv[1], "Mandelbrot") == 0)
         fractol.type = MANDELBROT;
     else if (argc == 4 && ft_strcmp((char *)argv[1], "Julia") == 0)
@@ -103,11 +157,13 @@ int main(int argc, const char **argv)
     }
     else
         write_error("Usage: ./fractol Mandelbrot | ./fractol Julia <real> <imaginary>");
-    init_values(&fractol);
     fractol.mlx = mlx_init(fractol.win_width, fractol.win_height,
             "fract-ol", false);
     if (!fractol.mlx)
         write_error("mlx_init failed");
+    debug_print(&fractol);
+    mlx_key_hook(fractol.mlx, key_hook, &fractol);
+    mlx_close_hook(fractol.mlx, close_hook, &fractol);
     mlx_loop(fractol.mlx);
     mlx_terminate(fractol.mlx);
     return (0);

@@ -46,4 +46,11 @@ typedef struct s_fractol {
     int offset_y;
 } t_fractol;
 
+void    write_error(char *msg);
+double  parse_double(const char *value);
+void    init_values(t_fractol *fractol);
+void    debug_print(t_fractol *fractol);
+void    key_hook(mlx_key_data_t keydata, void *param);
+void    close_hook(void *param);
+
 #endif
