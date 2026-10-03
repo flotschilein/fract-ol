@@ -8,7 +8,7 @@ MLX42_DIR = mlx42/
 MLX42_REPO = https://github.com/codam-coding-college/MLX42.git
 INCLUDES = -I include/ -I $(LIBFT_DIR) -I $(MLX42_DIR)include/
 
-SRC =
+SRC = $(SRC_DIR)main.c
 
 OBJ = $(SRC:.c=.o)
 LIBFT = $(LIBFT_DIR)libft.a
