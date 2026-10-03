@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/03 20:54:01 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/03 21:04:21 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,36 @@ void key_hook(mlx_key_data_t keydata, void *param)
         printf("[hook] ESC pressed, closing window\n");
         debug_print(fractol);
         mlx_close_window(fractol->mlx);
+        return ;
     }
+    if (keydata.action != MLX_PRESS && keydata.action != MLX_REPEAT)
+        return ;
+    if (keydata.key == MLX_KEY_UP || keydata.key == MLX_KEY_W)
+        fractol->offset_y -= MOVE_STEP;
+    else if (keydata.key == MLX_KEY_DOWN || keydata.key == MLX_KEY_S)
+        fractol->offset_y += MOVE_STEP;
+    else if (keydata.key == MLX_KEY_LEFT || keydata.key == MLX_KEY_A)
+        fractol->offset_x -= MOVE_STEP;
+    else if (keydata.key == MLX_KEY_RIGHT || keydata.key == MLX_KEY_D)
+        fractol->offset_x += MOVE_STEP;
+    else if (keydata.key == MLX_KEY_KP_ADD || keydata.key == MLX_KEY_EQUAL)
+    {
+        fractol->zoom *= ZOOM_FACTOR;
+        if (fractol->zoom > ZOOM_MAX)
+            fractol->zoom = ZOOM_MAX;
+    }
+    else if (keydata.key == MLX_KEY_KP_SUBTRACT || keydata.key == MLX_KEY_MINUS)
+    {
+        fractol->zoom /= ZOOM_FACTOR;
+        if (fractol->zoom < ZOOM_MIN)
+            fractol->zoom = ZOOM_MIN;
+    }
+    else
+        return ;
+    printf("[hook] key %d action %d -> offset (%d, %d) zoom %f\n",
+        keydata.key, keydata.action,
+        fractol->offset_x, fractol->offset_y, fractol->zoom);
+    debug_print(fractol);
 }
 
 void close_hook(void *param)

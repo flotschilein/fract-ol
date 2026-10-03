@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:10:18 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/03 20:07:14 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/03 21:04:12 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,10 @@
 # define WIN_WIDTH 800
 # define WIN_HEIGHT 800
 # define MAX_ITER 100
+# define MOVE_STEP 20
+# define ZOOM_FACTOR 1.1
+# define ZOOM_MIN 0.1
+# define ZOOM_MAX 1e6
 
 typedef enum s_fractol_type {
     MANDELBROT,
