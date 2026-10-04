@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/03 21:30:36 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/04 19:32:57 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,8 +136,8 @@ void apply_zoom(t_fractol *fractol, double factor, double anchor_x, double ancho
     eff = new_zoom / fractol->zoom;
     cx = fractol->win_width / 2.0;
     cy = fractol->win_height / 2.0;
-    fractol->offset_x = fractol->offset_x * eff + (anchor_x - cx) * (1.0 - eff);
-    fractol->offset_y = fractol->offset_y * eff + (anchor_y - cy) * (1.0 - eff);
+    fractol->offset_x = fractol->offset_x * eff + (anchor_x - cx) * (eff - 1.0);
+    fractol->offset_y = fractol->offset_y * eff + (anchor_y - cy) * (eff - 1.0);
     fractol->zoom = new_zoom;
 }
 
@@ -166,11 +166,13 @@ void key_hook(mlx_key_data_t keydata, void *param)
     {
         apply_zoom(fractol, ZOOM_FACTOR,
             fractol->win_width / 2.0, fractol->win_height / 2.0);
+        render_fractal(fractol);
     }
     else if (keydata.key == MLX_KEY_KP_SUBTRACT || keydata.key == MLX_KEY_MINUS)
     {
         apply_zoom(fractol, 1.0 / ZOOM_FACTOR,
             fractol->win_width / 2.0, fractol->win_height / 2.0);
+        render_fractal(fractol);
     }
     else if (keydata.key == MLX_KEY_C)
     {
@@ -272,6 +274,7 @@ void scroll_hook(double xdelta, double ydelta, void *param)
     factor = pow(ZOOM_FACTOR, ydelta);
     apply_zoom(fractol, factor,
         (double)fractol->mouse_x, (double)fractol->mouse_y);
+    render_fractal(fractol);
     printf("[hook] scroll y %f -> zoom %f offset (%f, %f) at mouse (%d, %d)\n",
         ydelta, fractol->zoom, fractol->offset_x, fractol->offset_y,
         fractol->mouse_x, fractol->mouse_y);
@@ -360,9 +363,9 @@ void render_fractal(t_fractol *fractol)
         while (x < fractol->win_width)
         {
             cr = ((double)x - fractol->win_width / 2.0 + fractol->offset_x)
-                * (4.0 / fractol->win_width);
+                * (4.0 / fractol->win_width) / fractol->zoom;
             ci = ((double)y - fractol->win_height / 2.0 + fractol->offset_y)
-                * (4.0 / fractol->win_height);
+                * (4.0 / fractol->win_height) / fractol->zoom;
             iter = mandelbrot_iter(cr, ci, fractol->max_iter);
             mlx_put_pixel(fractol->img, (uint32_t)x, (uint32_t)y,
                 get_color_simple(iter, fractol->max_iter));
