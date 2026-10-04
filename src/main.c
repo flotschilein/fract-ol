@@ -90,6 +90,7 @@ void init_values(t_fractol *fractol)
     fractol->iterations = MAX_ITER;
     fractol->color_shift = 0;
     fractol->auto_color = false;
+    fractol->needs_resize = false;
     fractol->mouse_x = 0;
     fractol->mouse_y = 0;
 }
@@ -236,6 +237,20 @@ void loop_hook(void *param)
         fractol->offset_x += step;
         moved = true;
     }
+    if (fractol->needs_resize)
+    {
+        fractol->needs_resize = false;
+        if (fractol->img)
+        {
+            if (!mlx_resize_image(fractol->img,
+                    (uint32_t)fractol->win_width,
+                    (uint32_t)fractol->win_height))
+                write_error("mlx_resize_image failed");
+            moved = true;
+        }
+        printf("[hook] resize -> %dx%d\n",
+            fractol->win_width, fractol->win_height);
+    }
     if (moved)
         render_fractal(fractol);
     if (!fractol->auto_color)
@@ -297,17 +312,12 @@ void resize_hook(int32_t width, int32_t height, void *param)
     fractol = (t_fractol *)param;
     if (width <= 0 || height <= 0)
         return ;
+    if (width == fractol->win_width && height == fractol->win_height
+        && !fractol->needs_resize)
+        return ;
     fractol->win_width = width;
     fractol->win_height = height;
-    if (fractol->img)
-    {
-        if (!mlx_resize_image(fractol->img, (uint32_t)width, (uint32_t)height))
-        {
-            write_error("mlx_resize_image failed");
-        }
-        render_fractal(fractol);
-    }
-    printf("[hook] resize -> %dx%d\n", width, height);
+    fractol->needs_resize = true;
 }
 
 int mandelbrot_iter(double cr, double ci, int max_iter)
@@ -350,12 +360,18 @@ void render_fractal(t_fractol *fractol)
     int     y;
     double  cr;
     double  ci;
+    double  scale;
     int     iter;
 
     if (!fractol || !fractol->img)
         return ;
     if (fractol->type != MANDELBROT)
         return ;
+    if (fractol->win_width < fractol->win_height)
+        scale = 4.0 / (double)fractol->win_width;
+    else
+        scale = 4.0 / (double)fractol->win_height;
+    scale /= fractol->zoom;
     y = 0;
     while (y < fractol->win_height)
     {
@@ -363,9 +379,9 @@ void render_fractal(t_fractol *fractol)
         while (x < fractol->win_width)
         {
             cr = ((double)x - fractol->win_width / 2.0 + fractol->offset_x)
-                * (4.0 / fractol->win_width) / fractol->zoom;
+                * scale;
             ci = ((double)y - fractol->win_height / 2.0 + fractol->offset_y)
-                * (4.0 / fractol->win_height) / fractol->zoom;
+                * scale;
             iter = mandelbrot_iter(cr, ci, fractol->max_iter);
             mlx_put_pixel(fractol->img, (uint32_t)x, (uint32_t)y,
                 get_color_simple(iter, fractol->max_iter));

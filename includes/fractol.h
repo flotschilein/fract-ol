@@ -46,6 +46,7 @@ typedef struct s_fractol {
     int mouse_y;
     int color_shift;
     bool auto_color;
+    bool needs_resize;
     int iterations;
     int max_iter;
     int win_width;
