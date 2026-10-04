@@ -144,10 +144,8 @@ void apply_zoom(t_fractol *fractol, double factor, double anchor_x, double ancho
 void key_hook(mlx_key_data_t keydata, void *param)
 {
     t_fractol *fractol;
-    bool      moved;
 
     fractol = (t_fractol *)param;
-    moved = false;
     if (keydata.key == MLX_KEY_ESCAPE && keydata.action == MLX_PRESS)
     {
         printf("[hook] ESC pressed, closing window\n");
@@ -157,27 +155,14 @@ void key_hook(mlx_key_data_t keydata, void *param)
     }
     if (keydata.action != MLX_PRESS && keydata.action != MLX_REPEAT)
         return ;
-    if (keydata.key == MLX_KEY_UP || keydata.key == MLX_KEY_W)
+    if (keydata.key == MLX_KEY_UP || keydata.key == MLX_KEY_W
+        || keydata.key == MLX_KEY_DOWN || keydata.key == MLX_KEY_S
+        || keydata.key == MLX_KEY_LEFT || keydata.key == MLX_KEY_A
+        || keydata.key == MLX_KEY_RIGHT || keydata.key == MLX_KEY_D)
     {
-        fractol->offset_y -= MOVE_STEP;
-        moved = true;
+        return ;
     }
-    else if (keydata.key == MLX_KEY_DOWN || keydata.key == MLX_KEY_S)
-    {
-        fractol->offset_y += MOVE_STEP;
-        moved = true;
-    }
-    else if (keydata.key == MLX_KEY_LEFT || keydata.key == MLX_KEY_A)
-    {
-        fractol->offset_x -= MOVE_STEP;
-        moved = true;
-    }
-    else if (keydata.key == MLX_KEY_RIGHT || keydata.key == MLX_KEY_D)
-    {
-        fractol->offset_x += MOVE_STEP;
-        moved = true;
-    }
-    else if (keydata.key == MLX_KEY_KP_ADD || keydata.key == MLX_KEY_EQUAL)
+    if (keydata.key == MLX_KEY_KP_ADD || keydata.key == MLX_KEY_EQUAL)
     {
         apply_zoom(fractol, ZOOM_FACTOR,
             fractol->win_width / 2.0, fractol->win_height / 2.0);
@@ -202,8 +187,6 @@ void key_hook(mlx_key_data_t keydata, void *param)
     }
     else
         return ;
-    if (moved)
-        render_fractal(fractol);
     printf("[hook] key %d action %d -> offset (%f, %f) zoom %f color %d auto %d\n",
         keydata.key, keydata.action,
         fractol->offset_x, fractol->offset_y, fractol->zoom,
@@ -215,8 +198,44 @@ void loop_hook(void *param)
 {
     t_fractol       *fractol;
     static int      frame;
+    double          dt;
+    double          step;
+    bool            moved;
 
     fractol = (t_fractol *)param;
+    dt = fractol->mlx->delta_time;
+    if (dt < 0.0)
+        dt = 0.0;
+    if (dt > 0.05)
+        dt = 0.05;
+    step = MOVE_SPEED * dt;
+    moved = false;
+    if (mlx_is_key_down(fractol->mlx, MLX_KEY_UP)
+        || mlx_is_key_down(fractol->mlx, MLX_KEY_W))
+    {
+        fractol->offset_y -= step;
+        moved = true;
+    }
+    if (mlx_is_key_down(fractol->mlx, MLX_KEY_DOWN)
+        || mlx_is_key_down(fractol->mlx, MLX_KEY_S))
+    {
+        fractol->offset_y += step;
+        moved = true;
+    }
+    if (mlx_is_key_down(fractol->mlx, MLX_KEY_LEFT)
+        || mlx_is_key_down(fractol->mlx, MLX_KEY_A))
+    {
+        fractol->offset_x -= step;
+        moved = true;
+    }
+    if (mlx_is_key_down(fractol->mlx, MLX_KEY_RIGHT)
+        || mlx_is_key_down(fractol->mlx, MLX_KEY_D))
+    {
+        fractol->offset_x += step;
+        moved = true;
+    }
+    if (moved)
+        render_fractal(fractol);
     if (!fractol->auto_color)
     {
         frame = 0;

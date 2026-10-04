@@ -24,6 +24,7 @@
 # define WIN_HEIGHT 800
 # define MAX_ITER 100
 # define MOVE_STEP 20
+# define MOVE_SPEED 400.0
 # define ZOOM_FACTOR 1.1
 # define ZOOM_MIN 0.1
 # define ZOOM_MAX 1e6

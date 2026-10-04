@@ -1,4 +1,3 @@
-movement (improve)
 zoom (implement)
 resize (effect render)
 colorshift
