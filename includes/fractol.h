@@ -63,5 +63,6 @@ void    close_hook(void *param);
 void    scroll_hook(double xdelta, double ydelta, void *param);
 void    cursor_hook(double xpos, double ypos, void *param);
 void    loop_hook(void *param);
+void    resize_hook(int32_t width, int32_t height, void *param);
 
 #endif

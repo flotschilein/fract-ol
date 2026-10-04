@@ -252,6 +252,25 @@ void cursor_hook(double xpos, double ypos, void *param)
     fractol->mouse_y = (int)ypos;
 }
 
+void resize_hook(int32_t width, int32_t height, void *param)
+{
+    t_fractol *fractol;
+
+    fractol = (t_fractol *)param;
+    if (width <= 0 || height <= 0)
+        return ;
+    fractol->win_width = width;
+    fractol->win_height = height;
+    if (fractol->img)
+    {
+        if (!mlx_resize_image(fractol->img, (uint32_t)width, (uint32_t)height))
+        {
+            write_error("mlx_resize_image failed");
+        }
+    }
+    printf("[hook] resize -> %dx%d\n", width, height);
+}
+
 int main(int argc, const char **argv)
 {
     t_fractol  fractol;
@@ -268,10 +287,17 @@ int main(int argc, const char **argv)
     else
         write_error("Usage: ./fractol Mandelbrot | ./fractol Julia <real> <imaginary>");
     fractol.mlx = mlx_init(fractol.win_width, fractol.win_height,
-            "fract-ol", false);
+            "fract-ol", true);
     if (!fractol.mlx)
         write_error("mlx_init failed");
+    fractol.img = mlx_new_image(fractol.mlx,
+            (uint32_t)fractol.win_width, (uint32_t)fractol.win_height);
+    if (!fractol.img)
+        write_error("mlx_new_image failed");
+    if (mlx_image_to_window(fractol.mlx, fractol.img, 0, 0) < 0)
+        write_error("mlx_image_to_window failed");
     debug_print(&fractol);
+    mlx_resize_hook(fractol.mlx, resize_hook, &fractol);
     mlx_key_hook(fractol.mlx, key_hook, &fractol);
     mlx_close_hook(fractol.mlx, close_hook, &fractol);
     mlx_scroll_hook(fractol.mlx, scroll_hook, &fractol);
