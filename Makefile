@@ -65,7 +65,10 @@ run: all
 run_julia: all
 	./$(NAME) Julia $(JULIA_X) $(JULIA_Y)
 
+run_sierpinski: all
+	./$(NAME) Sierpinski
+
 JULIA_X = -0.4
 JULIA_Y = 0.6
 
-.PHONY: all bonus clean fclean re run run_julia clone_mlx42
+.PHONY: all bonus clean fclean re run run_julia run_sierpinski clone_mlx42

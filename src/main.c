@@ -37,7 +37,7 @@ double parse_double(const char *value)
     int     has_digits;
 
     if (!value || value[0] == '\0') {
-        write_error("Usage: ./fractol Mandelbrot | ./fractol Julia <real> <imaginary>");
+        write_error("Usage: ./fractol Mandelbrot | ./fractol Sierpinski | ./fractol Julia <real> <imaginary>");
     }
     number = 0.0;
     divisor = 1.0;
@@ -68,7 +68,7 @@ double parse_double(const char *value)
     }
     number *= sign;
     if (!has_digits || value[i] != '\0' || !isfinite(number)) {
-        write_error("Usage: ./fractol Mandelbrot | ./fractol Julia <real> <imaginary>");
+        write_error("Usage: ./fractol Mandelbrot | ./fractol Sierpinski | ./fractol Julia <real> <imaginary>");
     }
 
     return (number);
@@ -101,8 +101,10 @@ void debug_print(t_fractol *fractol)
 
     if (fractol->type == MANDELBROT)
         type_str = "Mandelbrot";
-    else
+    else if (fractol->type == JULIA)
         type_str = "Julia";
+    else
+        type_str = "Sierpinski";
     printf("--- fractol debug ---\n");
     printf("type        : %s (%d)\n", type_str, fractol->type);
     printf("julia_x     : %f\n", fractol->julia_x);
@@ -359,6 +361,41 @@ int julia_iter(double zr, double zi, double jr, double ji, int max_iter)
     return (i);
 }
 
+int sierpinski_iter(double x, double y, int max_iter)
+{
+    int     i;
+    double  u;
+    double  v;
+
+    u = (x + 1.0 - y) / 2.0;
+    v = (1.0 - y - x) / 2.0;
+    if (u < 0.0 || v < 0.0 || u + v > 1.0)
+        return (0);
+    i = 0;
+    while (i < max_iter)
+    {
+        if (u + v <= 0.5)
+        {
+            u *= 2.0;
+            v *= 2.0;
+        }
+        else if (u >= 0.5)
+        {
+            u = u * 2.0 - 1.0;
+            v *= 2.0;
+        }
+        else if (v >= 0.5)
+        {
+            u *= 2.0;
+            v = v * 2.0 - 1.0;
+        }
+        else
+            return (i);
+        i++;
+    }
+    return (i);
+}
+
 uint32_t get_color(int iter, int max_iter, int shift)
 {
     uint8_t r;
@@ -406,6 +443,8 @@ void render_fractal(t_fractol *fractol)
             if (fractol->type == JULIA)
                 iter = julia_iter(cr, ci, fractol->julia_x,
                     fractol->julia_y, fractol->max_iter);
+            else if (fractol->type == SIERPINSKI)
+                iter = sierpinski_iter(cr, ci, fractol->max_iter);
             else
                 iter = mandelbrot_iter(cr, ci, fractol->max_iter);
             mlx_put_pixel(fractol->img, (uint32_t)x, (uint32_t)y,
@@ -423,6 +462,8 @@ int main(int argc, const char **argv)
     init_values(&fractol);
     if (argc == 2 && ft_strcmp((char *)argv[1], "Mandelbrot") == 0)
         fractol.type = MANDELBROT;
+    else if (argc == 2 && ft_strcmp((char *)argv[1], "Sierpinski") == 0)
+        fractol.type = SIERPINSKI;
     else if (argc == 4 && ft_strcmp((char *)argv[1], "Julia") == 0)
     {
         fractol.type = JULIA;
@@ -430,7 +471,7 @@ int main(int argc, const char **argv)
         fractol.julia_y = parse_double(argv[3]);
     }
     else
-        write_error("Usage: ./fractol Mandelbrot | ./fractol Julia <real> <imaginary>");
+        write_error("Usage: ./fractol Mandelbrot | ./fractol Sierpinski | ./fractol Julia <real> <imaginary>");
     fractol.mlx = mlx_init(fractol.win_width, fractol.win_height,
             "fract-ol", true);
     if (!fractol.mlx)

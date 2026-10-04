@@ -33,7 +33,8 @@
 
 typedef enum s_fractol_type {
     MANDELBROT,
-    JULIA
+    JULIA,
+    SIERPINSKI
 } t_fratol_type;
 
 typedef struct s_fractol {
@@ -69,6 +70,7 @@ void    loop_hook(void *param);
 void    resize_hook(int32_t width, int32_t height, void *param);
 int     mandelbrot_iter(double cr, double ci, int max_iter);
 int     julia_iter(double zr, double zi, double jr, double ji, int max_iter);
+int     sierpinski_iter(double x, double y, int max_iter);
 uint32_t get_color(int iter, int max_iter, int shift);
 void    render_fractal(t_fractol *fractol);
 
