@@ -292,8 +292,8 @@ void scroll_hook(double xdelta, double ydelta, void *param)
         return ;
     mlx_get_mouse_pos(fractol->mlx, &fractol->mouse_x, &fractol->mouse_y);
     factor = pow(ZOOM_FACTOR, ydelta);
-    apply_zoom(fractol, factor,
-        (double)fractol->mouse_x, (double)fractol->mouse_y);
+    apply_zoom(fractol, factor, (double)fractol->mouse_x,
+        (double)(fractol->win_height - fractol->mouse_y));
     render_fractal(fractol);
     printf("[hook] scroll y %f -> zoom %f offset (%f, %f) at mouse (%d, %d)\n",
         ydelta, fractol->zoom, fractol->offset_x, fractol->offset_y,
