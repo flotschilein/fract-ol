@@ -59,4 +59,7 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all bonus clean fclean re clone_mlx42
+run: all
+	./$(NAME) Mandelbrot
+
+.PHONY: all bonus clean fclean re run clone_mlx42
