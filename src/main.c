@@ -267,8 +267,74 @@ void resize_hook(int32_t width, int32_t height, void *param)
         {
             write_error("mlx_resize_image failed");
         }
+        render_fractal(fractol);
     }
     printf("[hook] resize -> %dx%d\n", width, height);
+}
+
+int mandelbrot_iter(double cr, double ci, int max_iter)
+{
+    double  zr;
+    double  zi;
+    double  tmp;
+    int     i;
+
+    zr = 0.0;
+    zi = 0.0;
+    i = 0;
+    while (i < max_iter && (zr * zr + zi * zi) <= 4.0)
+    {
+        tmp = zr * zr - zi * zi + cr;
+        zi = 2.0 * zr * zi + ci;
+        zr = tmp;
+        i++;
+    }
+    return (i);
+}
+
+uint32_t get_color_simple(int iter, int max_iter)
+{
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+
+    if (iter >= max_iter)
+        return (0x000000FF);
+    r = (uint8_t)((iter * 9) % 255);
+    g = (uint8_t)((iter * 7) % 255);
+    b = (uint8_t)((iter * 13) % 255);
+    return ((uint32_t)(r << 24 | g << 16 | b << 8 | 0xFF));
+}
+
+void render_fractal(t_fractol *fractol)
+{
+    int     x;
+    int     y;
+    double  cr;
+    double  ci;
+    int     iter;
+
+    if (!fractol || !fractol->img)
+        return ;
+    if (fractol->type != MANDELBROT)
+        return ;
+    y = 0;
+    while (y < fractol->win_height)
+    {
+        x = 0;
+        while (x < fractol->win_width)
+        {
+            cr = ((double)x - fractol->win_width / 2.0)
+                * (4.0 / fractol->win_width);
+            ci = ((double)y - fractol->win_height / 2.0)
+                * (4.0 / fractol->win_height);
+            iter = mandelbrot_iter(cr, ci, fractol->max_iter);
+            mlx_put_pixel(fractol->img, (uint32_t)x, (uint32_t)y,
+                get_color_simple(iter, fractol->max_iter));
+            x++;
+        }
+        y++;
+    }
 }
 
 int main(int argc, const char **argv)
@@ -296,6 +362,7 @@ int main(int argc, const char **argv)
         write_error("mlx_new_image failed");
     if (mlx_image_to_window(fractol.mlx, fractol.img, 0, 0) < 0)
         write_error("mlx_image_to_window failed");
+    render_fractal(&fractol);
     debug_print(&fractol);
     mlx_resize_hook(fractol.mlx, resize_hook, &fractol);
     mlx_key_hook(fractol.mlx, key_hook, &fractol);

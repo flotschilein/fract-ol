@@ -64,5 +64,8 @@ void    scroll_hook(double xdelta, double ydelta, void *param);
 void    cursor_hook(double xpos, double ypos, void *param);
 void    loop_hook(void *param);
 void    resize_hook(int32_t width, int32_t height, void *param);
+int     mandelbrot_iter(double cr, double ci, int max_iter);
+uint32_t get_color_simple(int iter, int max_iter);
+void    render_fractal(t_fractol *fractol);
 
 #endif
