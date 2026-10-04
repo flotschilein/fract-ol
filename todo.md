@@ -1,4 +1,3 @@
-zoom (implement)
 resize (effect render)
 colorshift
 julia (implement)
