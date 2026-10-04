@@ -62,4 +62,10 @@ re: fclean all
 run: all
 	./$(NAME) Mandelbrot
 
-.PHONY: all bonus clean fclean re run clone_mlx42
+run_julia: all
+	./$(NAME) Julia $(JULIA_X) $(JULIA_Y)
+
+JULIA_X = -0.4
+JULIA_Y = 0.6
+
+.PHONY: all bonus clean fclean re run run_julia clone_mlx42

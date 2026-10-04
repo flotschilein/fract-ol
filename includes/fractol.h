@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:10:18 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/03 21:30:32 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/04 20:42:51 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ void    cursor_hook(double xpos, double ypos, void *param);
 void    loop_hook(void *param);
 void    resize_hook(int32_t width, int32_t height, void *param);
 int     mandelbrot_iter(double cr, double ci, int max_iter);
+int     julia_iter(double zr, double zi, double jr, double ji, int max_iter);
 uint32_t get_color(int iter, int max_iter, int shift);
 void    render_fractal(t_fractol *fractol);
 

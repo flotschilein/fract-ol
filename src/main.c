@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/04 19:32:57 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/04 20:42:53 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -343,6 +343,22 @@ int mandelbrot_iter(double cr, double ci, int max_iter)
     return (i);
 }
 
+int julia_iter(double zr, double zi, double jr, double ji, int max_iter)
+{
+    double  tmp;
+    int     i;
+
+    i = 0;
+    while (i < max_iter && (zr * zr + zi * zi) <= 4.0)
+    {
+        tmp = zr * zr - zi * zi + jr;
+        zi = 2.0 * zr * zi + ji;
+        zr = tmp;
+        i++;
+    }
+    return (i);
+}
+
 uint32_t get_color(int iter, int max_iter, int shift)
 {
     uint8_t r;
@@ -372,8 +388,6 @@ void render_fractal(t_fractol *fractol)
 
     if (!fractol || !fractol->img)
         return ;
-    if (fractol->type != MANDELBROT)
-        return ;
     if (fractol->win_width < fractol->win_height)
         scale = 4.0 / (double)fractol->win_width;
     else
@@ -387,9 +401,13 @@ void render_fractal(t_fractol *fractol)
         {
             cr = ((double)x - fractol->win_width / 2.0 + fractol->offset_x)
                 * scale;
-            ci = ((double)y - fractol->win_height / 2.0 + fractol->offset_y)
-                * scale;
-            iter = mandelbrot_iter(cr, ci, fractol->max_iter);
+            ci = ((double)(fractol->win_height - y) - fractol->win_height / 2.0
+                + fractol->offset_y) * scale;
+            if (fractol->type == JULIA)
+                iter = julia_iter(cr, ci, fractol->julia_x,
+                    fractol->julia_y, fractol->max_iter);
+            else
+                iter = mandelbrot_iter(cr, ci, fractol->max_iter);
             mlx_put_pixel(fractol->img, (uint32_t)x, (uint32_t)y,
                 get_color(iter, fractol->max_iter, fractol->color_shift));
             x++;
