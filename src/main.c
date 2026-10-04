@@ -181,6 +181,7 @@ void key_hook(mlx_key_data_t keydata, void *param)
             fractol->color_shift -= 1;
         else
             fractol->color_shift += 1;
+        render_fractal(fractol);
     }
     else if (keydata.key == MLX_KEY_V)
     {
@@ -200,12 +201,13 @@ void key_hook(mlx_key_data_t keydata, void *param)
 void loop_hook(void *param)
 {
     t_fractol       *fractol;
-    static int      frame;
+    double          accum;
     double          dt;
     double          step;
     bool            moved;
 
     fractol = (t_fractol *)param;
+    accum = 0.0;
     dt = fractol->mlx->delta_time;
     if (dt < 0.0)
         dt = 0.0;
@@ -251,19 +253,20 @@ void loop_hook(void *param)
         printf("[hook] resize -> %dx%d\n",
             fractol->win_width, fractol->win_height);
     }
+    if (fractol->auto_color)
+    {
+        accum += dt;
+        if (accum >= AUTO_COLOR_INTERVAL)
+        {
+            accum = 0.0;
+            fractol->color_shift += 1;
+            moved = true;
+        }
+    }
+    else
+        accum = 0.0;
     if (moved)
         render_fractal(fractol);
-    if (!fractol->auto_color)
-    {
-        frame = 0;
-        return ;
-    }
-    frame++;
-    if (frame >= AUTO_COLOR_EVERY_N_FRAMES)
-    {
-        frame = 0;
-        fractol->color_shift += 1;
-    }
 }
 
 void close_hook(void *param)
@@ -340,17 +343,21 @@ int mandelbrot_iter(double cr, double ci, int max_iter)
     return (i);
 }
 
-uint32_t get_color_simple(int iter, int max_iter)
+uint32_t get_color(int iter, int max_iter, int shift)
 {
     uint8_t r;
     uint8_t g;
     uint8_t b;
+    double  t;
+    double  p;
 
     if (iter >= max_iter)
         return (0x000000FF);
-    r = (uint8_t)((iter * 9) % 255);
-    g = (uint8_t)((iter * 7) % 255);
-    b = (uint8_t)((iter * 13) % 255);
+    t = sqrt((double)iter / (double)max_iter);
+    p = t + (double)shift / 100.0;
+    r = (uint8_t)(255.0 * (0.5 + 0.5 * sin(6.28318530718 * p)));
+    g = (uint8_t)(255.0 * (0.5 + 0.5 * sin(6.28318530718 * (p + 0.33))));
+    b = (uint8_t)(255.0 * (0.5 + 0.5 * sin(6.28318530718 * (p + 0.67))));
     return ((uint32_t)(r << 24 | g << 16 | b << 8 | 0xFF));
 }
 
@@ -384,7 +391,7 @@ void render_fractal(t_fractol *fractol)
                 * scale;
             iter = mandelbrot_iter(cr, ci, fractol->max_iter);
             mlx_put_pixel(fractol->img, (uint32_t)x, (uint32_t)y,
-                get_color_simple(iter, fractol->max_iter));
+                get_color(iter, fractol->max_iter, fractol->color_shift));
             x++;
         }
         y++;
