@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 17:21:58 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 17:33:14 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 #include <errno.h>
 #include <math.h>
-#include <stdio.h>
 
 void write_error(char *msg)
 {
@@ -99,34 +98,6 @@ void init_values(t_fractol *fractol)
     fractol->scroll_pending = false;
 }
 
-void debug_print(t_fractol *fractol)
-{
-    const char *type_str;
-
-    if (fractol->type == MANDELBROT)
-        type_str = "Mandelbrot";
-    else if (fractol->type == JULIA)
-        type_str = "Julia";
-    else
-        type_str = "Sierpinski";
-    printf("--- fractol debug ---\n");
-    printf("type        : %s (%d)\n", type_str, fractol->type);
-    printf("julia_x     : %f\n", fractol->julia_x);
-    printf("julia_y     : %f\n", fractol->julia_y);
-    printf("zoom        : %f\n", fractol->zoom);
-    printf("offset_x    : %f\n", fractol->offset_x);
-    printf("offset_y    : %f\n", fractol->offset_y);
-    printf("max_iter    : %d\n", fractol->max_iter);
-    printf("color_shift : %f\n", fractol->color_shift);
-    printf("auto_color  : %d\n", fractol->auto_color);
-    printf("mouse       : (%d, %d)\n", fractol->mouse_x, fractol->mouse_y);
-    printf("win         : %dx%d\n", fractol->win_width, fractol->win_height);
-    printf("mlx         : %p\n", (void *)fractol->mlx);
-    printf("img         : %p\n", (void *)fractol->img);
-    printf("---------------------\n");
-    fflush(stdout);
-}
-
 void apply_zoom(t_fractol *fractol, double factor, double anchor_x, double anchor_y)
 {
     double  new_zoom;
@@ -152,8 +123,6 @@ void key_hook(mlx_key_data_t keydata, void *param)
     fractol = (t_fractol *)param;
     if (keydata.key == MLX_KEY_ESCAPE && keydata.action == MLX_PRESS)
     {
-        printf("[hook] ESC pressed, closing window\n");
-        debug_print(fractol);
         mlx_close_window(fractol->mlx);
         return ;
     }
@@ -187,11 +156,6 @@ void key_hook(mlx_key_data_t keydata, void *param)
     }
     else
         return ;
-    printf("[hook] key %d action %d -> offset (%f, %f) zoom %f color %f auto %d\n",
-        keydata.key, keydata.action,
-        fractol->offset_x, fractol->offset_y, fractol->zoom,
-        fractol->color_shift, fractol->auto_color);
-    debug_print(fractol);
 }
 
 void loop_hook(void *param)
@@ -240,10 +204,6 @@ void loop_hook(void *param)
         {
             apply_zoom(fractol, pow(ZOOM_FACTOR, fractol->scroll_accum),
                 fractol->scroll_anchor_x, fractol->scroll_anchor_y);
-            printf("[hook] scroll y %f -> zoom %f offset (%f, %f) at mouse (%d, %d)\n",
-                fractol->scroll_accum, fractol->zoom,
-                fractol->offset_x, fractol->offset_y,
-                (int)fractol->scroll_anchor_x, (int)fractol->scroll_anchor_y);
             fractol->scroll_accum = 0.0;
             fractol->scroll_timer = 0.0;
             fractol->scroll_pending = false;
@@ -261,8 +221,6 @@ void loop_hook(void *param)
                 write_error("mlx_resize_image failed");
             moved = true;
         }
-        printf("[hook] resize -> %dx%d\n",
-            fractol->win_width, fractol->win_height);
     }
     if (fractol->auto_color)
     {
@@ -279,8 +237,6 @@ void close_hook(void *param)
     t_fractol *fractol;
 
     fractol = (t_fractol *)param;
-    printf("[hook] window X button pressed, closing\n");
-    debug_print(fractol);
     mlx_close_window(fractol->mlx);
 }
 
@@ -502,7 +458,6 @@ int main(int argc, const char **argv)
     if (mlx_image_to_window(fractol.mlx, fractol.img, 0, 0) < 0)
         write_error("mlx_image_to_window failed");
     render_fractal(&fractol);
-    debug_print(&fractol);
     mlx_resize_hook(fractol.mlx, resize_hook, &fractol);
     mlx_key_hook(fractol.mlx, key_hook, &fractol);
     mlx_close_hook(fractol.mlx, close_hook, &fractol);

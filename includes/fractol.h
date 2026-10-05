@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:10:18 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 17:22:04 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 17:33:19 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,6 @@ typedef struct s_fractol {
 void    write_error(char *msg);
 double  parse_double(const char *value);
 void    init_values(t_fractol *fractol);
-void    debug_print(t_fractol *fractol);
 void    apply_zoom(t_fractol *fractol, double factor, double anchor_x, double anchor_y);
 void    key_hook(mlx_key_data_t keydata, void *param);
 void    close_hook(void *param);
