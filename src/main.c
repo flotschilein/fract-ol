@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/04 20:42:53 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 15:02:39 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,13 +220,13 @@ void loop_hook(void *param)
     if (mlx_is_key_down(fractol->mlx, MLX_KEY_UP)
         || mlx_is_key_down(fractol->mlx, MLX_KEY_W))
     {
-        fractol->offset_y -= step;
+        fractol->offset_y += step;
         moved = true;
     }
     if (mlx_is_key_down(fractol->mlx, MLX_KEY_DOWN)
         || mlx_is_key_down(fractol->mlx, MLX_KEY_S))
     {
-        fractol->offset_y += step;
+        fractol->offset_y -= step;
         moved = true;
     }
     if (mlx_is_key_down(fractol->mlx, MLX_KEY_LEFT)
