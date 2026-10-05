@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 18:22:26 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 18:26:34 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,29 +15,28 @@
 #include <errno.h>
 #include <math.h>
 
-void write_error(char *msg)
+void	write_error(char *msg)
 {
-	write(2, BOLD_RED , ft_strlen(BOLD_RED));
+	write(2, BOLD_RED, ft_strlen(BOLD_RED));
 	if (!msg)
 		write(2, "FATAL ERROR", ft_strlen("FATAL ERROR"));
 	else
-		write(2, msg , ft_strlen(msg));
+		write(2, msg, ft_strlen(msg));
 	write(2, "\n", 1);
-	write(2, RESET , ft_strlen(RESET));
+	write(2, RESET, ft_strlen(RESET));
 	exit(1);
 }
 
-double parse_double(const char *value)
+double	parse_double(const char *value)
 {
-	double  number;
-	double  divisor;
-	int     sign;
-	int     i;
-	int     has_digits;
+	double	number;
+	double	divisor;
+	int		sign;
+	int		i;
+	int		has_digits;
 
-	if (!value || value[0] == '\0') {
+	if (!value || value[0] == '\0')
 		write_error("Usage: ./fractol Mandelbrot | ./fractol Sierpinski | ./fractol Julia <real> <imaginary>");
-	}
 	number = 0.0;
 	divisor = 1.0;
 	sign = 1;
@@ -45,17 +44,20 @@ double parse_double(const char *value)
 	has_digits = 0;
 	while (value[i] == ' ' || (value[i] >= '\t' && value[i] <= '\r'))
 		i++;
-	if (value[i] == '-' || value[i] == '+') {
+	if (value[i] == '-' || value[i] == '+')
+	{
 		if (value[i] == '-')
 			sign = -1;
 		i++;
 	}
-	while (value[i] >= '0' && value[i] <= '9') {
+	while (value[i] >= '0' && value[i] <= '9')
+	{
 		number = number * 10.0 + (value[i] - '0');
 		has_digits = 1;
 		i++;
 	}
-	if (value[i] == '.') {
+	if (value[i] == '.')
+	{
 		i++;
 		while (value[i] >= '0' && value[i] <= '9') {
 			number = number * 10.0 + (value[i] - '0');
@@ -73,7 +75,7 @@ double parse_double(const char *value)
 	return (number);
 }
 
-void init_values(t_fractol *fractol)
+void	init_values(t_fractol *fractol)
 {
 	fractol->mlx = NULL;
 	fractol->img = NULL;
@@ -100,7 +102,7 @@ void init_values(t_fractol *fractol)
 	fractol->refine_timer = 0.0;
 }
 
-void apply_zoom(t_fractol *fractol, double factor, double anchor_x, double anchor_y)
+void	apply_zoom(t_fractol *fractol, double factor, double anchor_x, double anchor_y)
 {
 	double  new_zoom;
 	double  eff;
@@ -118,7 +120,7 @@ void apply_zoom(t_fractol *fractol, double factor, double anchor_x, double ancho
 	fractol->zoom = new_zoom;
 }
 
-void key_hook(mlx_key_data_t keydata, void *param)
+void	key_hook(mlx_key_data_t keydata, void *param)
 {
 	t_fractol *fractol;
 
@@ -162,7 +164,7 @@ void key_hook(mlx_key_data_t keydata, void *param)
 		return ;
 }
 
-void loop_hook(void *param)
+void	loop_hook(void *param)
 {
 	t_fractol       *fractol;
 	double          dt;
@@ -256,7 +258,7 @@ void loop_hook(void *param)
 	}
 }
 
-void close_hook(void *param)
+void	close_hook(void *param)
 {
 	t_fractol *fractol;
 
@@ -264,7 +266,7 @@ void close_hook(void *param)
 	mlx_close_window(fractol->mlx);
 }
 
-void scroll_hook(double xdelta, double ydelta, void *param)
+void	scroll_hook(double xdelta, double ydelta, void *param)
 {
 	t_fractol *fractol;
 
@@ -280,7 +282,7 @@ void scroll_hook(double xdelta, double ydelta, void *param)
 	fractol->scroll_pending = true;
 }
 
-void cursor_hook(double xpos, double ypos, void *param)
+void	cursor_hook(double xpos, double ypos, void *param)
 {
 	t_fractol *fractol;
 
@@ -289,7 +291,7 @@ void cursor_hook(double xpos, double ypos, void *param)
 	fractol->mouse_y = (int)ypos;
 }
 
-void resize_hook(int32_t width, int32_t height, void *param)
+void	resize_hook(int32_t width, int32_t height, void *param)
 {
 	t_fractol *fractol;
 
@@ -304,7 +306,7 @@ void resize_hook(int32_t width, int32_t height, void *param)
 	fractol->needs_resize = true;
 }
 
-int mandelbrot_iter(double cr, double ci, int max_iter)
+int	mandelbrot_iter(double cr, double ci, int max_iter)
 {
 	double  zr;
 	double  zi;
@@ -324,7 +326,7 @@ int mandelbrot_iter(double cr, double ci, int max_iter)
 	return (i);
 }
 
-int julia_iter(double zr, double zi, double jr, double ji, int max_iter)
+int	julia_iter(double zr, double zi, double jr, double ji, int max_iter)
 {
 	double  tmp;
 	int     i;
@@ -340,7 +342,7 @@ int julia_iter(double zr, double zi, double jr, double ji, int max_iter)
 	return (i);
 }
 
-int sierpinski_iter(double x, double y, int max_iter)
+int	sierpinski_iter(double x, double y, int max_iter)
 {
 	int     i;
 	double  u;
@@ -375,7 +377,7 @@ int sierpinski_iter(double x, double y, int max_iter)
 	return (i);
 }
 
-uint32_t get_color(int iter, int cur_iter, int max_iter, double shift)
+uint32_t	get_color(int iter, int cur_iter, int max_iter, double shift)
 {
 	uint8_t r;
 	uint8_t g;
@@ -395,7 +397,7 @@ uint32_t get_color(int iter, int cur_iter, int max_iter, double shift)
 	return ((uint32_t)(r << 24 | g << 16 | b << 8 | 0xFF));
 }
 
-void render_fractal(t_fractol *fractol)
+void	render_fractal(t_fractol *fractol)
 {
 	int     x;
 	int     y;
@@ -455,7 +457,7 @@ void render_fractal(t_fractol *fractol)
 	}
 }
 
-int main(int argc, const char **argv)
+int	main(int argc, const char **argv)
 {
 	t_fractol  fractol;
 
