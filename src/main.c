@@ -6,12 +6,11 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 18:26:34 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 18:33:12 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/fractol.h"
-
 #include <errno.h>
 #include <math.h>
 
@@ -59,7 +58,8 @@ double	parse_double(const char *value)
 	if (value[i] == '.')
 	{
 		i++;
-		while (value[i] >= '0' && value[i] <= '9') {
+		while (value[i] >= '0' && value[i] <= '9')
+		{
 			number = number * 10.0 + (value[i] - '0');
 			divisor *= 10.0;
 			has_digits = 1;
@@ -68,10 +68,10 @@ double	parse_double(const char *value)
 		number /= divisor;
 	}
 	number *= sign;
-	if (!has_digits || value[i] != '\0' || !isfinite(number)) {
+	if (!has_digits || value[i] != '\0' || !isfinite(number))
+	{
 		write_error("Usage: ./fractol Mandelbrot | ./fractol Sierpinski | ./fractol Julia <real> <imaginary>");
 	}
-
 	return (number);
 }
 
@@ -102,12 +102,13 @@ void	init_values(t_fractol *fractol)
 	fractol->refine_timer = 0.0;
 }
 
-void	apply_zoom(t_fractol *fractol, double factor, double anchor_x, double anchor_y)
+void	apply_zoom(t_fractol *fractol, double factor, double anchor_x,
+		double anchor_y)
 {
-	double  new_zoom;
-	double  eff;
-	double  cx;
-	double  cy;
+	double	new_zoom;
+	double	eff;
+	double	cx;
+	double	cy;
 
 	new_zoom = fractol->zoom * factor;
 	if (new_zoom < ZOOM_MIN)
@@ -122,7 +123,7 @@ void	apply_zoom(t_fractol *fractol, double factor, double anchor_x, double ancho
 
 void	key_hook(mlx_key_data_t keydata, void *param)
 {
-	t_fractol *fractol;
+	t_fractol	*fractol;
 
 	fractol = (t_fractol *)param;
 	if (keydata.key == MLX_KEY_ESCAPE && keydata.action == MLX_PRESS)
@@ -134,15 +135,15 @@ void	key_hook(mlx_key_data_t keydata, void *param)
 		return ;
 	if (keydata.key == MLX_KEY_KP_ADD || keydata.key == MLX_KEY_EQUAL)
 	{
-		apply_zoom(fractol, ZOOM_FACTOR,
-			fractol->win_width / 2.0, fractol->win_height / 2.0);
+		apply_zoom(fractol, ZOOM_FACTOR, fractol->win_width / 2.0,
+			fractol->win_height / 2.0);
 		fractol->iter = START_ITER;
 		render_fractal(fractol);
 	}
 	else if (keydata.key == MLX_KEY_KP_SUBTRACT || keydata.key == MLX_KEY_MINUS)
 	{
-		apply_zoom(fractol, 1.0 / ZOOM_FACTOR,
-			fractol->win_width / 2.0, fractol->win_height / 2.0);
+		apply_zoom(fractol, 1.0 / ZOOM_FACTOR, fractol->win_width / 2.0,
+			fractol->win_height / 2.0);
 		fractol->iter = START_ITER;
 		render_fractal(fractol);
 	}
@@ -166,11 +167,11 @@ void	key_hook(mlx_key_data_t keydata, void *param)
 
 void	loop_hook(void *param)
 {
-	t_fractol       *fractol;
-	double          dt;
-	double          step;
-	bool            moved;
-	bool            redraw;
+	t_fractol	*fractol;
+	double		dt;
+	double		step;
+	bool		moved;
+	bool		redraw;
 
 	fractol = (t_fractol *)param;
 	dt = fractol->mlx->delta_time;
@@ -223,8 +224,7 @@ void	loop_hook(void *param)
 		fractol->needs_resize = false;
 		if (fractol->img)
 		{
-			if (!mlx_resize_image(fractol->img,
-					(uint32_t)fractol->win_width,
+			if (!mlx_resize_image(fractol->img, (uint32_t)fractol->win_width,
 					(uint32_t)fractol->win_height))
 				write_error("mlx_resize_image failed");
 			moved = true;
@@ -260,7 +260,7 @@ void	loop_hook(void *param)
 
 void	close_hook(void *param)
 {
-	t_fractol *fractol;
+	t_fractol	*fractol;
 
 	fractol = (t_fractol *)param;
 	mlx_close_window(fractol->mlx);
@@ -268,7 +268,7 @@ void	close_hook(void *param)
 
 void	scroll_hook(double xdelta, double ydelta, void *param)
 {
-	t_fractol *fractol;
+	t_fractol	*fractol;
 
 	(void)xdelta;
 	fractol = (t_fractol *)param;
@@ -284,7 +284,7 @@ void	scroll_hook(double xdelta, double ydelta, void *param)
 
 void	cursor_hook(double xpos, double ypos, void *param)
 {
-	t_fractol *fractol;
+	t_fractol	*fractol;
 
 	fractol = (t_fractol *)param;
 	fractol->mouse_x = (int)xpos;
@@ -293,7 +293,7 @@ void	cursor_hook(double xpos, double ypos, void *param)
 
 void	resize_hook(int32_t width, int32_t height, void *param)
 {
-	t_fractol *fractol;
+	t_fractol	*fractol;
 
 	fractol = (t_fractol *)param;
 	if (width <= 0 || height <= 0)
@@ -308,10 +308,10 @@ void	resize_hook(int32_t width, int32_t height, void *param)
 
 int	mandelbrot_iter(double cr, double ci, int max_iter)
 {
-	double  zr;
-	double  zi;
-	double  tmp;
-	int     i;
+	double	zr;
+	double	zi;
+	double	tmp;
+	int		i;
 
 	zr = 0.0;
 	zi = 0.0;
@@ -328,8 +328,8 @@ int	mandelbrot_iter(double cr, double ci, int max_iter)
 
 int	julia_iter(double zr, double zi, double jr, double ji, int max_iter)
 {
-	double  tmp;
-	int     i;
+	double	tmp;
+	int		i;
 
 	i = 0;
 	while (i < max_iter && (zr * zr + zi * zi) <= 4.0)
@@ -344,9 +344,9 @@ int	julia_iter(double zr, double zi, double jr, double ji, int max_iter)
 
 int	sierpinski_iter(double x, double y, int max_iter)
 {
-	int     i;
-	double  u;
-	double  v;
+	int		i;
+	double	u;
+	double	v;
 
 	u = (x + 1.0 - y) / 2.0;
 	v = (1.0 - y - x) / 2.0;
@@ -379,11 +379,11 @@ int	sierpinski_iter(double x, double y, int max_iter)
 
 uint32_t	get_color(int iter, int cur_iter, int max_iter, double shift)
 {
-	uint8_t r;
-	uint8_t g;
-	uint8_t b;
-	double  t;
-	double  p;
+	uint8_t	r;
+	uint8_t	g;
+	uint8_t	b;
+	double	t;
+	double	p;
 
 	if (iter < 0)
 		return (BACKGROUND_COLOR);
@@ -399,16 +399,16 @@ uint32_t	get_color(int iter, int cur_iter, int max_iter, double shift)
 
 void	render_fractal(t_fractol *fractol)
 {
-	int     x;
-	int     y;
-	double  cr;
-	double  ci;
-	double  scale;
-	int     iter;
-	int     width;
-	int     height;
-	double  center_x;
-	double  center_y;
+	int		x;
+	int		y;
+	double	cr;
+	double	ci;
+	double	scale;
+	int		iter;
+	int		width;
+	int		height;
+	double	center_x;
+	double	center_y;
 
 	if (!fractol || !fractol->img)
 		return ;
@@ -437,13 +437,13 @@ void	render_fractal(t_fractol *fractol)
 		x = 0;
 		while (x < width)
 		{
-			cr = center_x + ((double)x - width / 2.0
-				+ fractol->offset_x) * scale;
+			cr = center_x + ((double)x - width / 2.0 + fractol->offset_x)
+				* scale;
 			ci = center_y + ((double)(height - y) - height / 2.0
-				+ fractol->offset_y) * scale;
+					+ fractol->offset_y) * scale;
 			if (fractol->type == JULIA)
-				iter = julia_iter(cr, ci, fractol->julia_x,
-					fractol->julia_y, fractol->iter);
+				iter = julia_iter(cr, ci, fractol->julia_x, fractol->julia_y,
+						fractol->iter);
 			else if (fractol->type == SIERPINSKI)
 				iter = sierpinski_iter(cr, ci, fractol->iter);
 			else
@@ -459,7 +459,7 @@ void	render_fractal(t_fractol *fractol)
 
 int	main(int argc, const char **argv)
 {
-	t_fractol  fractol;
+	t_fractol	fractol;
 
 	init_values(&fractol);
 	if (argc == 2 && ft_strcmp((char *)argv[1], "Mandelbrot") == 0)
@@ -474,12 +474,12 @@ int	main(int argc, const char **argv)
 	}
 	else
 		write_error("Usage: ./fractol Mandelbrot | ./fractol Sierpinski | ./fractol Julia <real> <imaginary>");
-	fractol.mlx = mlx_init(fractol.win_width, fractol.win_height,
-			"fract-ol", true);
+	fractol.mlx = mlx_init(fractol.win_width, fractol.win_height, "fract-ol",
+			true);
 	if (!fractol.mlx)
 		write_error("mlx_init failed");
-	fractol.img = mlx_new_image(fractol.mlx,
-			(uint32_t)fractol.win_width, (uint32_t)fractol.win_height);
+	fractol.img = mlx_new_image(fractol.mlx, (uint32_t)fractol.win_width,
+			(uint32_t)fractol.win_height);
 	if (!fractol.img)
 		write_error("mlx_new_image failed");
 	if (mlx_image_to_window(fractol.mlx, fractol.img, 0, 0) < 0)
