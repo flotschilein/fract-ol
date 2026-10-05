@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:10:18 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 15:22:26 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 16:42:58 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,7 @@
 # define MOVE_SPEED 400.0
 # define ZOOM_FACTOR 1.1
 # define ZOOM_MIN 0.1
-# define AUTO_COLOR_EVERY_N_FRAMES 1
-# define AUTO_COLOR_INTERVAL 0.05
+# define AUTO_COLOR_SPEED 10.0
 # define SCROLL_SETTLE_DELAY 0.05
 
 typedef enum s_fractol_type {
@@ -51,7 +50,7 @@ typedef struct s_fractol {
     double scroll_anchor_y;
     double scroll_timer;
     bool scroll_pending;
-    int color_shift;
+    double color_shift;
     bool auto_color;
     bool needs_resize;
     int iterations;
@@ -76,7 +75,7 @@ void    resize_hook(int32_t width, int32_t height, void *param);
 int     mandelbrot_iter(double cr, double ci, int max_iter);
 int     julia_iter(double zr, double zi, double jr, double ji, int max_iter);
 int     sierpinski_iter(double x, double y, int max_iter);
-uint32_t get_color(int iter, int max_iter, int shift);
+uint32_t get_color(int iter, int max_iter, double shift);
 void    render_fractal(t_fractol *fractol);
 
 #endif

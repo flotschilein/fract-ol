@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 15:22:25 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 16:42:56 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void init_values(t_fractol *fractol)
     fractol->offset_y = 0.0;
     fractol->max_iter = MAX_ITER;
     fractol->iterations = MAX_ITER;
-    fractol->color_shift = 0;
+    fractol->color_shift = 0.0;
     fractol->auto_color = false;
     fractol->needs_resize = false;
     fractol->mouse_x = 0;
@@ -119,7 +119,7 @@ void debug_print(t_fractol *fractol)
     printf("offset_y    : %f\n", fractol->offset_y);
     printf("max_iter    : %d\n", fractol->max_iter);
     printf("iterations  : %d\n", fractol->iterations);
-    printf("color_shift : %d\n", fractol->color_shift);
+    printf("color_shift : %f\n", fractol->color_shift);
     printf("auto_color  : %d\n", fractol->auto_color);
     printf("mouse       : (%d, %d)\n", fractol->mouse_x, fractol->mouse_y);
     printf("win         : %dx%d\n", fractol->win_width, fractol->win_height);
@@ -183,9 +183,9 @@ void key_hook(mlx_key_data_t keydata, void *param)
     else if (keydata.key == MLX_KEY_C)
     {
         if (keydata.modifier & MLX_SHIFT)
-            fractol->color_shift -= 1;
+            fractol->color_shift -= 1.0;
         else
-            fractol->color_shift += 1;
+            fractol->color_shift += 1.0;
         render_fractal(fractol);
     }
     else if (keydata.key == MLX_KEY_V)
@@ -196,7 +196,7 @@ void key_hook(mlx_key_data_t keydata, void *param)
     }
     else
         return ;
-    printf("[hook] key %d action %d -> offset (%f, %f) zoom %f color %d auto %d\n",
+    printf("[hook] key %d action %d -> offset (%f, %f) zoom %f color %f auto %d\n",
         keydata.key, keydata.action,
         fractol->offset_x, fractol->offset_y, fractol->zoom,
         fractol->color_shift, fractol->auto_color);
@@ -206,13 +206,11 @@ void key_hook(mlx_key_data_t keydata, void *param)
 void loop_hook(void *param)
 {
     t_fractol       *fractol;
-    double          accum;
     double          dt;
     double          step;
     bool            moved;
 
     fractol = (t_fractol *)param;
-    accum = 0.0;
     dt = fractol->mlx->delta_time;
     if (dt < 0.0)
         dt = 0.0;
@@ -277,16 +275,9 @@ void loop_hook(void *param)
     }
     if (fractol->auto_color)
     {
-        accum += dt;
-        if (accum >= AUTO_COLOR_INTERVAL)
-        {
-            accum = 0.0;
-            fractol->color_shift += 1;
-            moved = true;
-        }
+        fractol->color_shift += dt * AUTO_COLOR_SPEED;
+        moved = true;
     }
-    else
-        accum = 0.0;
     if (moved)
         render_fractal(fractol);
 }
@@ -412,7 +403,7 @@ int sierpinski_iter(double x, double y, int max_iter)
     return (i);
 }
 
-uint32_t get_color(int iter, int max_iter, int shift)
+uint32_t get_color(int iter, int max_iter, double shift)
 {
     uint8_t r;
     uint8_t g;
@@ -423,7 +414,7 @@ uint32_t get_color(int iter, int max_iter, int shift)
     if (iter >= max_iter)
         return (0x000000FF);
     t = sqrt((double)iter / (double)max_iter);
-    p = t + (double)shift / 100.0;
+    p = t + shift / 100.0;
     r = (uint8_t)(255.0 * (0.5 + 0.5 * sin(6.28318530718 * p)));
     g = (uint8_t)(255.0 * (0.5 + 0.5 * sin(6.28318530718 * (p + 0.33))));
     b = (uint8_t)(255.0 * (0.5 + 0.5 * sin(6.28318530718 * (p + 0.67))));
@@ -438,23 +429,28 @@ void render_fractal(t_fractol *fractol)
     double  ci;
     double  scale;
     int     iter;
+    int     width;
+    int     height;
 
     if (!fractol || !fractol->img)
         return ;
-    if (fractol->win_width < fractol->win_height)
-        scale = 4.0 / (double)fractol->win_width;
+    width = (int)fractol->img->width;
+    height = (int)fractol->img->height;
+    if (width < 1 || height < 1)
+        return ;
+    if (width < height)
+        scale = 4.0 / (double)width;
     else
-        scale = 4.0 / (double)fractol->win_height;
+        scale = 4.0 / (double)height;
     scale /= fractol->zoom;
     y = 0;
-    while (y < fractol->win_height)
+    while (y < height)
     {
         x = 0;
-        while (x < fractol->win_width)
+        while (x < width)
         {
-            cr = ((double)x - fractol->win_width / 2.0 + fractol->offset_x)
-                * scale;
-            ci = ((double)(fractol->win_height - y) - fractol->win_height / 2.0
+            cr = ((double)x - width / 2.0 + fractol->offset_x) * scale;
+            ci = ((double)(height - y) - height / 2.0
                 + fractol->offset_y) * scale;
             if (fractol->type == JULIA)
                 iter = julia_iter(cr, ci, fractol->julia_x,
