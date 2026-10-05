@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 17:33:14 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 17:43:55 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ void init_values(t_fractol *fractol)
     fractol->offset_x = 0.0;
     fractol->offset_y = 0.0;
     fractol->max_iter = MAX_ITER;
+    fractol->iter = START_ITER;
     fractol->color_shift = 0.0;
     fractol->auto_color = false;
     fractol->needs_resize = false;
@@ -96,6 +97,7 @@ void init_values(t_fractol *fractol)
     fractol->scroll_anchor_y = 0.0;
     fractol->scroll_timer = 0.0;
     fractol->scroll_pending = false;
+    fractol->refine_timer = 0.0;
 }
 
 void apply_zoom(t_fractol *fractol, double factor, double anchor_x, double anchor_y)
@@ -132,12 +134,14 @@ void key_hook(mlx_key_data_t keydata, void *param)
     {
         apply_zoom(fractol, ZOOM_FACTOR,
             fractol->win_width / 2.0, fractol->win_height / 2.0);
+        fractol->iter = START_ITER;
         render_fractal(fractol);
     }
     else if (keydata.key == MLX_KEY_KP_SUBTRACT || keydata.key == MLX_KEY_MINUS)
     {
         apply_zoom(fractol, 1.0 / ZOOM_FACTOR,
             fractol->win_width / 2.0, fractol->win_height / 2.0);
+        fractol->iter = START_ITER;
         render_fractal(fractol);
     }
     else if (keydata.key == MLX_KEY_C)
@@ -229,7 +233,23 @@ void loop_hook(void *param)
         moved = true;
     }
     if (moved)
+    {
+        fractol->iter = START_ITER;
         render_fractal(fractol);
+        return ;
+    }
+    if (fractol->iter < fractol->max_iter)
+    {
+        fractol->refine_timer += dt;
+        if (fractol->refine_timer >= REFINE_DELAY)
+        {
+            fractol->refine_timer = 0.0;
+            fractol->iter += REFINE_STEP;
+            if (fractol->iter > fractol->max_iter)
+                fractol->iter = fractol->max_iter;
+            render_fractal(fractol);
+        }
+    }
 }
 
 void close_hook(void *param)
@@ -351,7 +371,7 @@ int sierpinski_iter(double x, double y, int max_iter)
     return (i);
 }
 
-uint32_t get_color(int iter, int max_iter, double shift)
+uint32_t get_color(int iter, int cur_iter, int max_iter, double shift)
 {
     uint8_t r;
     uint8_t g;
@@ -361,7 +381,7 @@ uint32_t get_color(int iter, int max_iter, double shift)
 
     if (iter < 0)
         return (BACKGROUND_COLOR);
-    if (iter >= max_iter)
+    if (iter >= cur_iter)
         return (INSIDE_COLOR);
     t = sqrt((double)iter / (double)max_iter);
     p = t + shift / 100.0;
@@ -417,13 +437,14 @@ void render_fractal(t_fractol *fractol)
                 + fractol->offset_y) * scale;
             if (fractol->type == JULIA)
                 iter = julia_iter(cr, ci, fractol->julia_x,
-                    fractol->julia_y, fractol->max_iter);
+                    fractol->julia_y, fractol->iter);
             else if (fractol->type == SIERPINSKI)
-                iter = sierpinski_iter(cr, ci, fractol->max_iter);
+                iter = sierpinski_iter(cr, ci, fractol->iter);
             else
-                iter = mandelbrot_iter(cr, ci, fractol->max_iter);
+                iter = mandelbrot_iter(cr, ci, fractol->iter);
             mlx_put_pixel(fractol->img, (uint32_t)x, (uint32_t)y,
-                get_color(iter, fractol->max_iter, fractol->color_shift));
+                get_color(iter, fractol->iter, fractol->max_iter,
+                    fractol->color_shift));
             x++;
         }
         y++;

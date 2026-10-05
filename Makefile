@@ -1,6 +1,25 @@
 NAME = fractol
-CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CC = gcc
+CFLAGS = -Wall -Wextra -Werror -Ofast -flto -mtune=native \
+  -funroll-loops -fprefetch-loop-arrays -fpeel-loops -funswitch-loops -ftracer \
+  -ftree-vectorize -ftree-slp-vectorize -ftree-loop-distribution -fivopts \
+  -fgraphite-identity -floop-nest-optimize -floop-interchange -floop-strip-mine -floop-block -floop-unroll-and-jam \
+  -fstrict-aliasing -fweb -frename-registers -fira-loop-pressure -fira-region=all -fira-hoist-pressure \
+  -fsched-pressure -fsched-spec -fsched-spec-load \
+  -falign-functions=32 -falign-loops=32 -falign-jumps=32 -falign-labels=32 \
+  -freorder-blocks -freorder-blocks-and-partition -freorder-functions \
+  -fdata-sections -ffunction-sections -Wl,--gc-sections \
+  -fno-plt -fno-semantic-interposition \
+  -fomit-frame-pointer -fmerge-all-constants \
+  -ffast-math -fno-math-errno -fno-trapping-math -freciprocal-math \
+  -fassociative-math -ffinite-math-only -fno-signed-zeros \
+  -fipa-pta -fipa-cp-clone -fipa-sra -fipa-pure-const -fipa-reference \
+  -fdevirtualize -fdevirtualize-speculatively \
+  -fno-stack-protector -fno-exceptions -fwhole-program -pthread \
+  -fmodulo-sched -fmodulo-sched-allow-regmoves \
+  -fsplit-loops -fpredictive-commoning -ftree-loop-im -ftree-loop-if-convert \
+  -fgcse-sm -fgcse-las -fvariable-expansion-in-unroller -funroll-all-loops \
+  -Wno-unused-result
 
 SRC_DIR = src/
 LIBFT_DIR = Libft/

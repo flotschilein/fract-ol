@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:10:18 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 17:33:19 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 17:44:21 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,10 @@
 
 # define WIN_WIDTH 800
 # define WIN_HEIGHT 800
-# define MAX_ITER 100
+# define MAX_ITER 2000
+# define START_ITER 100
+# define REFINE_STEP 5
+# define REFINE_DELAY 0.03
 # define MOVE_STEP 20
 # define MOVE_SPEED 400.0
 # define ZOOM_FACTOR 1.1
@@ -55,10 +58,12 @@ typedef struct s_fractol {
     double scroll_anchor_y;
     double scroll_timer;
     bool scroll_pending;
+    double refine_timer;
     double color_shift;
     bool auto_color;
     bool needs_resize;
     int max_iter;
+    int iter;
     int win_width;
     int win_height;
     double offset_x;
@@ -78,7 +83,7 @@ void    resize_hook(int32_t width, int32_t height, void *param);
 int     mandelbrot_iter(double cr, double ci, int max_iter);
 int     julia_iter(double zr, double zi, double jr, double ji, int max_iter);
 int     sierpinski_iter(double x, double y, int max_iter);
-uint32_t get_color(int iter, int max_iter, double shift);
+uint32_t get_color(int iter, int cur_iter, int max_iter, double shift);
 void    render_fractal(t_fractol *fractol);
 
 #endif
