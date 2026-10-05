@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 15:07:41 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 15:22:25 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,8 +139,6 @@ void apply_zoom(t_fractol *fractol, double factor, double anchor_x, double ancho
     new_zoom = fractol->zoom * factor;
     if (new_zoom < ZOOM_MIN)
         new_zoom = ZOOM_MIN;
-    if (new_zoom > ZOOM_MAX)
-        new_zoom = ZOOM_MAX;
     eff = new_zoom / fractol->zoom;
     cx = fractol->win_width / 2.0;
     cy = fractol->win_height / 2.0;

@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:10:18 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 15:07:42 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 15:22:26 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@
 # define MOVE_SPEED 400.0
 # define ZOOM_FACTOR 1.1
 # define ZOOM_MIN 0.1
-# define ZOOM_MAX 1e6
 # define AUTO_COLOR_EVERY_N_FRAMES 1
 # define AUTO_COLOR_INTERVAL 0.05
 # define SCROLL_SETTLE_DELAY 0.05
