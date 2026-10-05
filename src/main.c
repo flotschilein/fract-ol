@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 18:53:43 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 19:04:35 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -264,7 +264,7 @@ void	color_helper(t_fractol *fractol, double dt, bool *redraw)
 	*redraw = true;
 }
 
-void	move_helper(t_fractol *fractol)
+void	render_helper(t_fractol *fractol)
 {
 	fractol->iter = START_ITER;
 	render_fractal(fractol);
@@ -303,7 +303,7 @@ void	loop_hook(void *param)
 	if (fractol->auto_color)
 		color_helper(fractol, dt, &redraw);
 	if (moved)
-		move_helper(fractol);
+		render_helper(fractol);
 	if (redraw)
 		render_fractal(fractol);
 	if (fractol->iter < fractol->max_iter)
@@ -378,19 +378,25 @@ int	mandelbrot_iter(double cr, double ci, int max_iter)
 	return (i);
 }
 
-int	julia_iter(double zr, double zi, double jr, double ji, int max_iter)
+int	julia_iter(double z[2], double j[2], int max_iter)
 {
+	double	zr;
+	double	zi;
 	double	tmp;
 	int		i;
 
+	zr = z[0];
+	zi = z[1];
 	i = 0;
 	while (i < max_iter && (zr * zr + zi * zi) <= 4.0)
 	{
-		tmp = zr * zr - zi * zi + jr;
-		zi = 2.0 * zr * zi + ji;
+		tmp = zr * zr - zi * zi + j[0];
+		zi = 2.0 * zr * zi + j[1];
 		zr = tmp;
 		i++;
 	}
+	z[0] = zr;
+	z[1] = zi;
 	return (i);
 }
 
@@ -461,6 +467,8 @@ void	render_fractal(t_fractol *fractol)
 	int		height;
 	double	center_x;
 	double	center_y;
+	double	z[2];
+	double	j[2];
 
 	if (!fractol || !fractol->img)
 		return ;
@@ -483,6 +491,8 @@ void	render_fractal(t_fractol *fractol)
 	else
 		scale = 4.0 / (double)height;
 	scale /= fractol->zoom;
+	j[0] = fractol->julia_x;
+	j[1] = fractol->julia_y;
 	y = 0;
 	while (y < height)
 	{
@@ -493,9 +503,10 @@ void	render_fractal(t_fractol *fractol)
 				* scale;
 			ci = center_y + ((double)(height - y) - height / 2.0
 					+ fractol->offset_y) * scale;
+			z[0] = cr;
+			z[1] = ci;
 			if (fractol->type == JULIA)
-				iter = julia_iter(cr, ci, fractol->julia_x, fractol->julia_y,
-						fractol->iter);
+				iter = julia_iter(z, j, fractol->iter);
 			else if (fractol->type == SIERPINSKI)
 				iter = sierpinski_iter(cr, ci, fractol->iter);
 			else
