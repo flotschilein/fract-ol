@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 18:33:12 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 18:35:12 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ double	parse_double(const char *value)
 	int		has_digits;
 
 	if (!value || value[0] == '\0')
-		write_error("Usage: ./fractol Mandelbrot | ./fractol Sierpinski | ./fractol Julia <real> <imaginary>");
+		write_error(USAGE);
 	number = 0.0;
 	divisor = 1.0;
 	sign = 1;
@@ -70,7 +70,7 @@ double	parse_double(const char *value)
 	number *= sign;
 	if (!has_digits || value[i] != '\0' || !isfinite(number))
 	{
-		write_error("Usage: ./fractol Mandelbrot | ./fractol Sierpinski | ./fractol Julia <real> <imaginary>");
+		write_error(USAGE);
 	}
 	return (number);
 }
@@ -473,7 +473,7 @@ int	main(int argc, const char **argv)
 		fractol.julia_y = parse_double(argv[3]);
 	}
 	else
-		write_error("Usage: ./fractol Mandelbrot | ./fractol Sierpinski | ./fractol Julia <real> <imaginary>");
+		write_error(USAGE);
 	fractol.mlx = mlx_init(fractol.win_width, fractol.win_height, "fract-ol",
 			true);
 	if (!fractol.mlx)
