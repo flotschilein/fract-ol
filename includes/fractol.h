@@ -94,14 +94,22 @@ typedef struct s_render
 void				write_error(t_fractol *fractol, char *msg);
 double				parse_double(const char *value);
 void				init_values(t_fractol *fractol);
+void				set_values(int argc, const char **argv,
+						t_fractol *fractol);
 void				apply_zoom(t_fractol *fractol, double factor,
 						double anchor_x, double anchor_y);
+void				set_center(t_fractol *fractol, double *center_x,
+						double *center_y);
 void				key_hook(mlx_key_data_t keydata, void *param);
 void				close_hook(void *param);
 void				scroll_hook(double xdelta, double ydelta, void *param);
 void				cursor_hook(double xpos, double ypos, void *param);
 void				loop_hook(void *param);
 void				resize_hook(int32_t width, int32_t height, void *param);
+void				move_helper(t_fractol *fractol, double step, bool *moved);
+void				handle_zoom(mlx_key_data_t keydata, t_fractol *fractol);
+void				color_shift(mlx_key_data_t keydata, t_fractol *fractol);
+double				get_dt(t_fractol *fractol);
 int					mandelbrot_iter(double cr, double ci, int max_iter);
 int					julia_iter(double z[2], double j[2], int max_iter);
 int					sierpinski_iter(double x, double y, int max_iter);
