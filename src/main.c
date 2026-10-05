@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 17:14:28 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 17:21:58 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,6 @@ void init_values(t_fractol *fractol)
     fractol->offset_x = 0.0;
     fractol->offset_y = 0.0;
     fractol->max_iter = MAX_ITER;
-    fractol->iterations = MAX_ITER;
     fractol->color_shift = 0.0;
     fractol->auto_color = false;
     fractol->needs_resize = false;
@@ -118,7 +117,6 @@ void debug_print(t_fractol *fractol)
     printf("offset_x    : %f\n", fractol->offset_x);
     printf("offset_y    : %f\n", fractol->offset_y);
     printf("max_iter    : %d\n", fractol->max_iter);
-    printf("iterations  : %d\n", fractol->iterations);
     printf("color_shift : %f\n", fractol->color_shift);
     printf("auto_color  : %d\n", fractol->auto_color);
     printf("mouse       : (%d, %d)\n", fractol->mouse_x, fractol->mouse_y);
@@ -161,13 +159,6 @@ void key_hook(mlx_key_data_t keydata, void *param)
     }
     if (keydata.action != MLX_PRESS && keydata.action != MLX_REPEAT)
         return ;
-    if (keydata.key == MLX_KEY_UP || keydata.key == MLX_KEY_W
-        || keydata.key == MLX_KEY_DOWN || keydata.key == MLX_KEY_S
-        || keydata.key == MLX_KEY_LEFT || keydata.key == MLX_KEY_A
-        || keydata.key == MLX_KEY_RIGHT || keydata.key == MLX_KEY_D)
-    {
-        return ;
-    }
     if (keydata.key == MLX_KEY_KP_ADD || keydata.key == MLX_KEY_EQUAL)
     {
         apply_zoom(fractol, ZOOM_FACTOR,
@@ -276,6 +267,7 @@ void loop_hook(void *param)
     if (fractol->auto_color)
     {
         fractol->color_shift += dt * AUTO_COLOR_SPEED;
+        fractol->color_shift = fmod(fractol->color_shift, COLOR_SHIFT_WRAP);
         moved = true;
     }
     if (moved)
@@ -377,7 +369,7 @@ int sierpinski_iter(double x, double y, int max_iter)
     u = (x + 1.0 - y) / 2.0;
     v = (1.0 - y - x) / 2.0;
     if (u < 0.0 || v < 0.0 || u + v > 1.0)
-        return (0);
+        return (-1);
     i = 0;
     while (i < max_iter)
     {
@@ -411,8 +403,10 @@ uint32_t get_color(int iter, int max_iter, double shift)
     double  t;
     double  p;
 
+    if (iter < 0)
+        return (BACKGROUND_COLOR);
     if (iter >= max_iter)
-        return (0x000000FF);
+        return (INSIDE_COLOR);
     t = sqrt((double)iter / (double)max_iter);
     p = t + shift / 100.0;
     r = (uint8_t)(255.0 * (0.5 + 0.5 * sin(6.28318530718 * p)));
@@ -431,6 +425,8 @@ void render_fractal(t_fractol *fractol)
     int     iter;
     int     width;
     int     height;
+    double  center_x;
+    double  center_y;
 
     if (!fractol || !fractol->img)
         return ;
@@ -438,6 +434,16 @@ void render_fractal(t_fractol *fractol)
     height = (int)fractol->img->height;
     if (width < 1 || height < 1)
         return ;
+    if (fractol->type == MANDELBROT)
+    {
+        center_x = MANDELBROT_CENTER_X;
+        center_y = MANDELBROT_CENTER_Y;
+    }
+    else
+    {
+        center_x = 0.0;
+        center_y = 0.0;
+    }
     if (width < height)
         scale = 4.0 / (double)width;
     else
@@ -449,8 +455,9 @@ void render_fractal(t_fractol *fractol)
         x = 0;
         while (x < width)
         {
-            cr = ((double)x - width / 2.0 + fractol->offset_x) * scale;
-            ci = ((double)(height - y) - height / 2.0
+            cr = center_x + ((double)x - width / 2.0
+                + fractol->offset_x) * scale;
+            ci = center_y + ((double)(height - y) - height / 2.0
                 + fractol->offset_y) * scale;
             if (fractol->type == JULIA)
                 iter = julia_iter(cr, ci, fractol->julia_x,
