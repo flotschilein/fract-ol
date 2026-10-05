@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 17:43:55 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 17:49:33 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,6 +168,7 @@ void loop_hook(void *param)
     double          dt;
     double          step;
     bool            moved;
+    bool            redraw;
 
     fractol = (t_fractol *)param;
     dt = fractol->mlx->delta_time;
@@ -177,6 +178,7 @@ void loop_hook(void *param)
         dt = 0.05;
     step = MOVE_SPEED * dt;
     moved = false;
+    redraw = false;
     if (mlx_is_key_down(fractol->mlx, MLX_KEY_UP)
         || mlx_is_key_down(fractol->mlx, MLX_KEY_W))
     {
@@ -230,7 +232,7 @@ void loop_hook(void *param)
     {
         fractol->color_shift += dt * AUTO_COLOR_SPEED;
         fractol->color_shift = fmod(fractol->color_shift, COLOR_SHIFT_WRAP);
-        moved = true;
+        redraw = true;
     }
     if (moved)
     {
@@ -238,6 +240,8 @@ void loop_hook(void *param)
         render_fractal(fractol);
         return ;
     }
+    if (redraw)
+        render_fractal(fractol);
     if (fractol->iter < fractol->max_iter)
     {
         fractol->refine_timer += dt;
