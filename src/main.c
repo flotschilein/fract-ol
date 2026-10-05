@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 19:18:04 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 19:54:38 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <errno.h>
 #include <math.h>
 
-void	write_error(char *msg)
+void	write_error(t_fractol *fractol, char *msg)
 {
 	write(2, BOLD_RED, ft_strlen(BOLD_RED));
 	if (!msg)
@@ -23,6 +23,12 @@ void	write_error(char *msg)
 		write(2, msg, ft_strlen(msg));
 	write(2, "\n", 1);
 	write(2, RESET, ft_strlen(RESET));
+	if (fractol && fractol->mlx)
+	{
+		mlx_terminate(fractol->mlx);
+		fractol->mlx = NULL;
+		fractol->img = NULL;
+	}
 	exit(1);
 }
 
@@ -86,7 +92,7 @@ double	parse_double(const char *value)
 	int		has_digits;
 
 	if (!value || value[0] == '\0')
-		write_error(USAGE);
+		write_error(NULL, USAGE);
 	i = 0;
 	has_digits = 0;
 	sign = parse_sign(value, &i);
@@ -94,7 +100,7 @@ double	parse_double(const char *value)
 	num += parse_fraction(value, &i, &div, &has_digits) / div;
 	num *= sign;
 	if (!has_digits || value[i] != '\0' || !isfinite(num))
-		write_error(USAGE);
+		write_error(NULL, USAGE);
 	return (num);
 }
 
@@ -210,7 +216,7 @@ void	resize_helper(t_fractol *fractol, bool *moved)
 	{
 		if (!mlx_resize_image(fractol->img, (uint32_t)fractol->win_width,
 				(uint32_t)fractol->win_height))
-			write_error("mlx_resize_image failed");
+			write_error(fractol, "mlx_resize_image failed");
 		*moved = true;
 	}
 }
@@ -566,17 +572,17 @@ void	set_values(int argc, const char **argv, t_fractol *fractol)
 		fractol->julia_y = parse_double(argv[3]);
 	}
 	else
-		write_error(USAGE);
+		write_error(fractol, USAGE);
 	fractol->mlx = mlx_init(fractol->win_width, fractol->win_height, "fract-ol",
 			true);
 	if (!fractol->mlx)
-		write_error("mlx_init failed");
+		write_error(fractol, "mlx_init failed");
 	fractol->img = mlx_new_image(fractol->mlx, (uint32_t)fractol->win_width,
 			(uint32_t)fractol->win_height);
 	if (!fractol->img)
-		write_error("mlx_new_image failed");
+		write_error(fractol, "mlx_new_image failed");
 	if (mlx_image_to_window(fractol->mlx, fractol->img, 0, 0) < 0)
-		write_error("mlx_image_to_window failed");
+		write_error(fractol, "mlx_image_to_window failed");
 }
 
 int	main(int argc, const char **argv)
