@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:10:18 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 19:04:35 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 19:13:52 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,23 @@ typedef struct s_fractol
 	double			offset_x;
 	double			offset_y;
 }					t_fractol;
+
+typedef struct s_render
+{
+	t_fractol		*fractol;
+	int				width;
+	int				height;
+	double			center_x;
+	double			center_y;
+	double			scale;
+	double			z[2];
+	double			j[2];
+	double			cr;
+	double			ci;
+	int				iter;
+	int				x;
+	int				y;
+}					t_render;
 
 void				write_error(char *msg);
 double				parse_double(const char *value);

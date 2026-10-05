@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 19:10:00 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 19:18:04 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -480,59 +480,75 @@ void	set_center(t_fractol *fractol, double *center_x, double *center_y)
 	}
 }
 
+static bool	init_render(t_fractol *fractol, t_render *render)
+{
+	render->fractol = fractol;
+	render->width = (int)fractol->img->width;
+	render->height = (int)fractol->img->height;
+	if (render->width < 1 || render->height < 1)
+		return (false);
+	set_center(fractol, &render->center_x, &render->center_y);
+	if (render->width < render->height)
+		render->scale = 4.0 / (double)render->width;
+	else
+		render->scale = 4.0 / (double)render->height;
+	render->scale /= fractol->zoom;
+	render->j[0] = fractol->julia_x;
+	render->j[1] = fractol->julia_y;
+	return (true);
+}
+
+static void	set_coord(t_render *render)
+{
+	render->cr = render->center_x + ((double)render->x - render->width / 2.0
+			+ render->fractol->offset_x) * render->scale;
+	render->ci = render->center_y + ((double)(render->height - render->y)
+			- render->height / 2.0 + render->fractol->offset_y) * render->scale;
+}
+
+static int	get_pixel_iter(t_render *render)
+{
+	render->z[0] = render->cr;
+	render->z[1] = render->ci;
+	if (render->fractol->type == JULIA)
+		return (julia_iter(render->z, render->j, render->fractol->iter));
+	if (render->fractol->type == SIERPINSKI)
+		return (sierpinski_iter(render->cr, render->ci, render->fractol->iter));
+	return (mandelbrot_iter(render->cr, render->ci, render->fractol->iter));
+}
+
+static void	draw_pixel(t_render *render)
+{
+	set_coord(render);
+	render->iter = get_pixel_iter(render);
+	mlx_put_pixel(render->fractol->img, (uint32_t)render->x,
+		(uint32_t)render->y, get_color(render->iter, render->fractol->iter,
+			render->fractol->max_iter, render->fractol->color_shift));
+}
+
+static void	render_row(t_render *render)
+{
+	render->x = 0;
+	while (render->x < render->width)
+	{
+		draw_pixel(render);
+		render->x++;
+	}
+}
+
 void	render_fractal(t_fractol *fractol)
 {
-	int		x;
-	int		y;
-	double	cr;
-	double	ci;
-	double	scale;
-	int		iter;
-	int		width;
-	int		height;
-	double	center_x;
-	double	center_y;
-	double	z[2];
-	double	j[2];
+	t_render	render;
 
 	if (!fractol || !fractol->img)
 		return ;
-	width = (int)fractol->img->width;
-	height = (int)fractol->img->height;
-	if (width < 1 || height < 1)
+	if (!init_render(fractol, &render))
 		return ;
-	set_center(fractol, &center_x, &center_y);
-	if (width < height)
-		scale = 4.0 / (double)width;
-	else
-		scale = 4.0 / (double)height;
-	scale /= fractol->zoom;
-	j[0] = fractol->julia_x;
-	j[1] = fractol->julia_y;
-	y = 0;
-	while (y < height)
+	render.y = 0;
+	while (render.y < render.height)
 	{
-		x = 0;
-		while (x < width)
-		{
-			cr = center_x + ((double)x - width / 2.0 + fractol->offset_x)
-				* scale;
-			ci = center_y + ((double)(height - y) - height / 2.0
-					+ fractol->offset_y) * scale;
-			z[0] = cr;
-			z[1] = ci;
-			if (fractol->type == JULIA)
-				iter = julia_iter(z, j, fractol->iter);
-			else if (fractol->type == SIERPINSKI)
-				iter = sierpinski_iter(cr, ci, fractol->iter);
-			else
-				iter = mandelbrot_iter(cr, ci, fractol->iter);
-			mlx_put_pixel(fractol->img, (uint32_t)x, (uint32_t)y,
-				get_color(iter, fractol->iter, fractol->max_iter,
-					fractol->color_shift));
-			x++;
-		}
-		y++;
+		render_row(&render);
+		render.y++;
 	}
 }
 
