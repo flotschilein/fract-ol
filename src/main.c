@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 15:02:39 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 15:07:41 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,11 @@ void init_values(t_fractol *fractol)
     fractol->needs_resize = false;
     fractol->mouse_x = 0;
     fractol->mouse_y = 0;
+    fractol->scroll_accum = 0.0;
+    fractol->scroll_anchor_x = 0.0;
+    fractol->scroll_anchor_y = 0.0;
+    fractol->scroll_timer = 0.0;
+    fractol->scroll_pending = false;
 }
 
 void debug_print(t_fractol *fractol)
@@ -241,6 +246,23 @@ void loop_hook(void *param)
         fractol->offset_x += step;
         moved = true;
     }
+    if (fractol->scroll_pending)
+    {
+        fractol->scroll_timer += dt;
+        if (fractol->scroll_timer >= SCROLL_SETTLE_DELAY)
+        {
+            apply_zoom(fractol, pow(ZOOM_FACTOR, fractol->scroll_accum),
+                fractol->scroll_anchor_x, fractol->scroll_anchor_y);
+            printf("[hook] scroll y %f -> zoom %f offset (%f, %f) at mouse (%d, %d)\n",
+                fractol->scroll_accum, fractol->zoom,
+                fractol->offset_x, fractol->offset_y,
+                (int)fractol->scroll_anchor_x, (int)fractol->scroll_anchor_y);
+            fractol->scroll_accum = 0.0;
+            fractol->scroll_timer = 0.0;
+            fractol->scroll_pending = false;
+            moved = true;
+        }
+    }
     if (fractol->needs_resize)
     {
         fractol->needs_resize = false;
@@ -284,21 +306,17 @@ void close_hook(void *param)
 void scroll_hook(double xdelta, double ydelta, void *param)
 {
     t_fractol *fractol;
-    double      factor;
 
     (void)xdelta;
     fractol = (t_fractol *)param;
     if (ydelta == 0)
         return ;
     mlx_get_mouse_pos(fractol->mlx, &fractol->mouse_x, &fractol->mouse_y);
-    factor = pow(ZOOM_FACTOR, ydelta);
-    apply_zoom(fractol, factor, (double)fractol->mouse_x,
-        (double)(fractol->win_height - fractol->mouse_y));
-    render_fractal(fractol);
-    printf("[hook] scroll y %f -> zoom %f offset (%f, %f) at mouse (%d, %d)\n",
-        ydelta, fractol->zoom, fractol->offset_x, fractol->offset_y,
-        fractol->mouse_x, fractol->mouse_y);
-    debug_print(fractol);
+    fractol->scroll_accum += ydelta;
+    fractol->scroll_anchor_x = (double)fractol->mouse_x;
+    fractol->scroll_anchor_y = (double)(fractol->win_height - fractol->mouse_y);
+    fractol->scroll_timer = 0.0;
+    fractol->scroll_pending = true;
 }
 
 void cursor_hook(double xpos, double ypos, void *param)

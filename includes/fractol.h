@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:10:18 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/04 20:42:51 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 15:07:42 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 # define ZOOM_MAX 1e6
 # define AUTO_COLOR_EVERY_N_FRAMES 1
 # define AUTO_COLOR_INTERVAL 0.05
+# define SCROLL_SETTLE_DELAY 0.05
 
 typedef enum s_fractol_type {
     MANDELBROT,
@@ -46,6 +47,11 @@ typedef struct s_fractol {
     double zoom;
     int mouse_x;
     int mouse_y;
+    double scroll_accum;
+    double scroll_anchor_x;
+    double scroll_anchor_y;
+    double scroll_timer;
+    bool scroll_pending;
     int color_shift;
     bool auto_color;
     bool needs_resize;
