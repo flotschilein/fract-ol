@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 19:06:10 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 19:10:00 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -466,6 +466,20 @@ uint32_t	get_color(int iter, int cur_iter, int max_iter, double shift)
 	return ((uint32_t)(r << 24 | g << 16 | b << 8 | 0xFF));
 }
 
+void	set_center(t_fractol *fractol, double *center_x, double *center_y)
+{
+	if (fractol->type == MANDELBROT)
+	{
+		*center_x = MANDELBROT_CENTER_X;
+		*center_y = MANDELBROT_CENTER_Y;
+	}
+	else
+	{
+		*center_x = 0.0;
+		*center_y = 0.0;
+	}
+}
+
 void	render_fractal(t_fractol *fractol)
 {
 	int		x;
@@ -487,16 +501,7 @@ void	render_fractal(t_fractol *fractol)
 	height = (int)fractol->img->height;
 	if (width < 1 || height < 1)
 		return ;
-	if (fractol->type == MANDELBROT)
-	{
-		center_x = MANDELBROT_CENTER_X;
-		center_y = MANDELBROT_CENTER_Y;
-	}
-	else
-	{
-		center_x = 0.0;
-		center_y = 0.0;
-	}
+	set_center(fractol, &center_x, &center_y);
 	if (width < height)
 		scale = 4.0 / (double)width;
 	else
@@ -531,33 +536,38 @@ void	render_fractal(t_fractol *fractol)
 	}
 }
 
+void	set_values(int argc, const char **argv, t_fractol *fractol)
+{
+	init_values(&*fractol);
+	if (argc == 2 && ft_strcmp((char *)argv[1], "Mandelbrot") == 0)
+		fractol->type = MANDELBROT;
+	else if (argc == 2 && ft_strcmp((char *)argv[1], "Sierpinski") == 0)
+		fractol->type = SIERPINSKI;
+	else if (argc == 4 && ft_strcmp((char *)argv[1], "Julia") == 0)
+	{
+		fractol->type = JULIA;
+		fractol->julia_x = parse_double(argv[2]);
+		fractol->julia_y = parse_double(argv[3]);
+	}
+	else
+		write_error(USAGE);
+	fractol->mlx = mlx_init(fractol->win_width, fractol->win_height, "fract-ol",
+			true);
+	if (!fractol->mlx)
+		write_error("mlx_init failed");
+	fractol->img = mlx_new_image(fractol->mlx, (uint32_t)fractol->win_width,
+			(uint32_t)fractol->win_height);
+	if (!fractol->img)
+		write_error("mlx_new_image failed");
+	if (mlx_image_to_window(fractol->mlx, fractol->img, 0, 0) < 0)
+		write_error("mlx_image_to_window failed");
+}
+
 int	main(int argc, const char **argv)
 {
 	t_fractol	fractol;
 
-	init_values(&fractol);
-	if (argc == 2 && ft_strcmp((char *)argv[1], "Mandelbrot") == 0)
-		fractol.type = MANDELBROT;
-	else if (argc == 2 && ft_strcmp((char *)argv[1], "Sierpinski") == 0)
-		fractol.type = SIERPINSKI;
-	else if (argc == 4 && ft_strcmp((char *)argv[1], "Julia") == 0)
-	{
-		fractol.type = JULIA;
-		fractol.julia_x = parse_double(argv[2]);
-		fractol.julia_y = parse_double(argv[3]);
-	}
-	else
-		write_error(USAGE);
-	fractol.mlx = mlx_init(fractol.win_width, fractol.win_height, "fract-ol",
-			true);
-	if (!fractol.mlx)
-		write_error("mlx_init failed");
-	fractol.img = mlx_new_image(fractol.mlx, (uint32_t)fractol.win_width,
-			(uint32_t)fractol.win_height);
-	if (!fractol.img)
-		write_error("mlx_new_image failed");
-	if (mlx_image_to_window(fractol.mlx, fractol.img, 0, 0) < 0)
-		write_error("mlx_image_to_window failed");
+	set_values(argc, argv, &fractol);
 	render_fractal(&fractol);
 	mlx_resize_hook(fractol.mlx, resize_hook, &fractol);
 	mlx_key_hook(fractol.mlx, key_hook, &fractol);
