@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 19:04:35 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 19:06:10 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -400,11 +400,37 @@ int	julia_iter(double z[2], double j[2], int max_iter)
 	return (i);
 }
 
+bool	sierpinski_helper(int i, double *u, double *v, int *value)
+{
+	if (*u + *v <= 0.5)
+	{
+		*u *= 2.0;
+		*v *= 2.0;
+	}
+	else if (*u >= 0.5)
+	{
+		*u = *u * 2.0 - 1.0;
+		*v *= 2.0;
+	}
+	else if (*v >= 0.5)
+	{
+		*u *= 2.0;
+		*v = *v * 2.0 - 1.0;
+	}
+	else
+	{
+		*value = (i);
+		return (true);
+	}
+	return (false);
+}
+
 int	sierpinski_iter(double x, double y, int max_iter)
 {
 	int		i;
 	double	u;
 	double	v;
+	int		value;
 
 	u = (x + 1.0 - y) / 2.0;
 	v = (1.0 - y - x) / 2.0;
@@ -413,23 +439,8 @@ int	sierpinski_iter(double x, double y, int max_iter)
 	i = 0;
 	while (i < max_iter)
 	{
-		if (u + v <= 0.5)
-		{
-			u *= 2.0;
-			v *= 2.0;
-		}
-		else if (u >= 0.5)
-		{
-			u = u * 2.0 - 1.0;
-			v *= 2.0;
-		}
-		else if (v >= 0.5)
-		{
-			u *= 2.0;
-			v = v * 2.0 - 1.0;
-		}
-		else
-			return (i);
+		if (sierpinski_helper(i, &u, &v, &value))
+			return (value);
 		i++;
 	}
 	return (i);
