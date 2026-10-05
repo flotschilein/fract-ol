@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/05 20:08:34 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 20:08:36 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 20:18:54 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,15 @@
 
 #include <math.h>
 
+/**
+ * @brief Turns a number of steps into a colour.
+ *
+ * @param iter Number of steps the pixel needed.
+ * @param cur_iter Steps the refinement is at right now.
+ * @param max_iter Steps when the refinement is done.
+ * @param shift How far the colours have moved.
+ * @return The colour as one RGBA number.
+ */
 uint32_t	get_color(int iter, int cur_iter, int max_iter, double shift)
 {
 	uint8_t	r;

@@ -6,12 +6,19 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/05 20:08:09 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 20:08:11 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 20:18:54 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/fractol.h"
 
+/**
+ * @brief Fills the render data and works out the scale.
+ *
+ * @param fractol The fractol state.
+ * @param render The render data to fill.
+ * @return false if the image has no size, true if it has one.
+ */
 static bool	init_render(t_fractol *fractol, t_render *render)
 {
 	render->fractol = fractol;
@@ -30,6 +37,11 @@ static bool	init_render(t_fractol *fractol, t_render *render)
 	return (true);
 }
 
+/**
+ * @brief Turns the current pixel into a point in the fractal.
+ *
+ * @param render The render data. cr and ci get the point.
+ */
 static void	set_coord(t_render *render)
 {
 	render->cr = render->center_x + ((double)render->x - render->width / 2.0
@@ -38,6 +50,12 @@ static void	set_coord(t_render *render)
 			- render->height / 2.0 + render->fractol->offset_y) * render->scale;
 }
 
+/**
+ * @brief Runs the chosen fractal on the current pixel.
+ *
+ * @param render The render data.
+ * @return The number of steps, or -1 for a point outside the fractal.
+ */
 static int	get_pixel_iter(t_render *render)
 {
 	render->z[0] = render->cr;
@@ -49,6 +67,11 @@ static int	get_pixel_iter(t_render *render)
 	return (mandelbrot_iter(render->cr, render->ci, render->fractol->iter));
 }
 
+/**
+ * @brief Works out the colour of the current pixel and writes it.
+ *
+ * @param render The render data.
+ */
 static void	draw_pixel(t_render *render)
 {
 	set_coord(render);
@@ -58,6 +81,11 @@ static void	draw_pixel(t_render *render)
 			render->fractol->max_iter, render->fractol->color_shift));
 }
 
+/**
+ * @brief Draws every pixel of the current row.
+ *
+ * @param render The render data.
+ */
 static void	render_row(t_render *render)
 {
 	render->x = 0;
@@ -68,6 +96,11 @@ static void	render_row(t_render *render)
 	}
 }
 
+/**
+ * @brief Draws the whole image, row by row.
+ *
+ * @param fractol The fractol state.
+ */
 void	render_fractal(t_fractol *fractol)
 {
 	t_render	render;

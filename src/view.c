@@ -6,12 +6,20 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/05 20:08:00 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 20:08:03 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 20:18:54 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/fractol.h"
 
+/**
+ * @brief Zooms the view and keeps one point in the same place.
+ *
+ * @param fractol The fractol state.
+ * @param factor Zoom factor, above 1 zooms in.
+ * @param anchor_x The point that stays still, on x.
+ * @param anchor_y The point that stays still, on y.
+ */
 void	apply_zoom(t_fractol *fractol, double factor, double anchor_x,
 		double anchor_y)
 {
@@ -31,6 +39,13 @@ void	apply_zoom(t_fractol *fractol, double factor, double anchor_x,
 	fractol->zoom = new_zoom;
 }
 
+/**
+ * @brief Gives the middle point of the fractal that was chosen.
+ *
+ * @param fractol The fractol state.
+ * @param center_x Gets the middle on x.
+ * @param center_y Gets the middle on y.
+ */
 void	set_center(t_fractol *fractol, double *center_x, double *center_y)
 {
 	if (fractol->type == MANDELBROT)

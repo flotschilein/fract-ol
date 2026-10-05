@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/05 20:08:21 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 20:08:23 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 20:18:54 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,12 @@
 
 #include <math.h>
 
+/**
+ * @brief Waits a little, then adds a few iterations and draws again.
+ *
+ * @param fractol The fractol state.
+ * @param dt Time since the last frame.
+ */
 static void	iteration_helper(t_fractol *fractol, double dt)
 {
 	fractol->refine_timer += dt;
@@ -27,6 +33,12 @@ static void	iteration_helper(t_fractol *fractol, double dt)
 	}
 }
 
+/**
+ * @brief Resizes the image when the window size changed.
+ *
+ * @param fractol The fractol state.
+ * @param moved Set to true if the image changed.
+ */
 static void	resize_helper(t_fractol *fractol, bool *moved)
 {
 	fractol->needs_resize = false;
@@ -39,6 +51,13 @@ static void	resize_helper(t_fractol *fractol, bool *moved)
 	}
 }
 
+/**
+ * @brief Zooms with the collected wheel movement once it stops.
+ *
+ * @param fractol The fractol state.
+ * @param dt Time since the last frame.
+ * @param moved Set to true if the view changed.
+ */
 static void	scroll_helper(t_fractol *fractol, double dt, bool *moved)
 {
 	fractol->scroll_timer += dt;
@@ -53,6 +72,13 @@ static void	scroll_helper(t_fractol *fractol, double dt, bool *moved)
 	}
 }
 
+/**
+ * @brief Moves the colours along for the colour animation.
+ *
+ * @param fractol The fractol state.
+ * @param dt Time since the last frame.
+ * @param redraw Set to true if a new drawing is needed.
+ */
 static void	color_helper(t_fractol *fractol, double dt, bool *redraw)
 {
 	fractol->color_shift += dt * AUTO_COLOR_SPEED;
@@ -60,12 +86,22 @@ static void	color_helper(t_fractol *fractol, double dt, bool *redraw)
 	*redraw = true;
 }
 
+/**
+ * @brief Sets the iterations back to the start value and draws again.
+ *
+ * @param fractol The fractol state.
+ */
 static void	render_helper(t_fractol *fractol)
 {
 	fractol->iter = START_ITER;
 	render_fractal(fractol);
 }
 
+/**
+ * @brief Loop callback. Runs once per frame.
+ *
+ * @param param The fractol state.
+ */
 void	loop_hook(void *param)
 {
 	t_fractol	*fractol;

@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/05 19:57:59 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 19:58:20 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 20:18:54 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,13 @@
 
 #include <math.h>
 
+/**
+ * @brief Skips spaces and reads the + or - sign.
+ *
+ * @param val The string to read.
+ * @param i Position in the string, moved forward.
+ * @return 1 for a plus sign, -1 for a minus sign.
+ */
 static int	parse_sign(const char *val, int *i)
 {
 	int	sign;
@@ -30,6 +37,14 @@ static int	parse_sign(const char *val, int *i)
 	return (sign);
 }
 
+/**
+ * @brief Reads the digits before the dot.
+ *
+ * @param val The string to read.
+ * @param i Position in the string, moved forward.
+ * @param has_digits Set to 1 if any digit was read.
+ * @return The number that was read.
+ */
 static double	parse_integer(const char *val, int *i, int *has_digits)
 {
 	double	number;
@@ -44,6 +59,15 @@ static double	parse_integer(const char *val, int *i, int *has_digits)
 	return (number);
 }
 
+/**
+ * @brief Reads the digits after the dot.
+ *
+ * @param val The string to read.
+ * @param i Position in the string, moved forward.
+ * @param divisor Gets a 10 for every digit after the dot.
+ * @param has_digits Set to 1 if any digit was read.
+ * @return The digits, not divided yet.
+ */
 static double	parse_fraction(const char *val, int *i, double *divisor,
 		int *has_digits)
 {
@@ -65,6 +89,13 @@ static double	parse_fraction(const char *val, int *i, double *divisor,
 	return (fraction);
 }
 
+/**
+ * @brief Turns a string into a double. Stops the program if the string is
+ *        not a number.
+ *
+ * @param value The string to read.
+ * @return The number.
+ */
 double	parse_double(const char *value)
 {
 	double	num;

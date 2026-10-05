@@ -6,12 +6,19 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 20:05:43 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 20:18:54 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/fractol.h"
 
+/**
+ * @brief Reads the arguments, draws the fractal and runs the window loop.
+ *
+ * @param argc Number of arguments.
+ * @param argv The arguments.
+ * @return 0 when everything closed fine.
+ */
 int	main(int argc, const char **argv)
 {
 	t_fractol	fractol;

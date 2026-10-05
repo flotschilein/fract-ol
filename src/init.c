@@ -6,12 +6,17 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/05 19:58:02 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 19:58:17 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 20:18:54 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/fractol.h"
 
+/**
+ * @brief Sets every value of the state to its default.
+ *
+ * @param fractol The fractol state to fill.
+ */
 void	init_values(t_fractol *fractol)
 {
 	fractol->mlx = NULL;
@@ -39,6 +44,13 @@ void	init_values(t_fractol *fractol)
 	fractol->refine_timer = 0.0;
 }
 
+/**
+ * @brief Reads the command line, then opens the window and makes the image.
+ *
+ * @param argc Number of arguments.
+ * @param argv The arguments.
+ * @param fractol The fractol state to fill.
+ */
 void	set_values(int argc, const char **argv, t_fractol *fractol)
 {
 	init_values(&*fractol);

@@ -6,12 +6,18 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/05 19:57:55 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 19:58:19 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 20:18:54 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/fractol.h"
 
+/**
+ * @brief Prints an error to the terminal and exits the program.
+ *
+ * @param fractol The fractol state, closes the window. Can be NULL.
+ * @param msg The message to print. NULL prints "FATAL ERROR".
+ */
 void	write_error(t_fractol *fractol, char *msg)
 {
 	write(2, BOLD_RED, ft_strlen(BOLD_RED));
