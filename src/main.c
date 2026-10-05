@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 18:38:42 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 18:45:53 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,18 +144,17 @@ void	apply_zoom(t_fractol *fractol, double factor, double anchor_x,
 	fractol->zoom = new_zoom;
 }
 
-void	key_hook(mlx_key_data_t keydata, void *param)
+void	color_shift(mlx_key_data_t keydata, t_fractol *fractol)
 {
-	t_fractol	*fractol;
+	if (keydata.modifier & MLX_SHIFT)
+		fractol->color_shift -= 1.0;
+	else
+		fractol->color_shift += 1.0;
+	render_fractal(fractol);
+}
 
-	fractol = (t_fractol *)param;
-	if (keydata.key == MLX_KEY_ESCAPE && keydata.action == MLX_PRESS)
-	{
-		mlx_close_window(fractol->mlx);
-		return ;
-	}
-	if (keydata.action != MLX_PRESS && keydata.action != MLX_REPEAT)
-		return ;
+void	handle_zoom(mlx_key_data_t keydata, t_fractol *fractol)
+{
 	if (keydata.key == MLX_KEY_KP_ADD || keydata.key == MLX_KEY_EQUAL)
 	{
 		apply_zoom(fractol, ZOOM_FACTOR, fractol->win_width / 2.0,
@@ -170,22 +169,25 @@ void	key_hook(mlx_key_data_t keydata, void *param)
 		fractol->iter = START_ITER;
 		render_fractal(fractol);
 	}
-	else if (keydata.key == MLX_KEY_C)
+}
+
+void	key_hook(mlx_key_data_t keydata, void *param)
+{
+	t_fractol	*fractol;
+
+	fractol = (t_fractol *)param;
+	if (keydata.key == MLX_KEY_ESCAPE && keydata.action == MLX_PRESS)
 	{
-		if (keydata.modifier & MLX_SHIFT)
-			fractol->color_shift -= 1.0;
-		else
-			fractol->color_shift += 1.0;
-		render_fractal(fractol);
-	}
-	else if (keydata.key == MLX_KEY_V)
-	{
-		if (keydata.action != MLX_PRESS)
-			return ;
-		fractol->auto_color = !fractol->auto_color;
-	}
-	else
+		mlx_close_window(fractol->mlx);
 		return ;
+	}
+	if (keydata.action != MLX_PRESS && keydata.action != MLX_REPEAT)
+		return ;
+	handle_zoom(keydata, fractol);
+	if (keydata.key == MLX_KEY_C)
+		color_shift(keydata, fractol);
+	else if (keydata.key == MLX_KEY_V && keydata.action == MLX_PRESS)
+		fractol->auto_color = !fractol->auto_color;
 }
 
 void	loop_hook(void *param)
