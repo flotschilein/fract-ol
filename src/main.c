@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 16:42:56 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 17:14:28 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,13 @@
 
 void write_error(char *msg)
 {
-    write(1, BOLD_RED , ft_strlen(BOLD_RED));
+    write(2, BOLD_RED , ft_strlen(BOLD_RED));
     if (!msg)
         write(2, "FATAL ERROR", ft_strlen("FATAL ERROR"));
     else
-        write(1, msg , ft_strlen(msg));
+        write(2, msg , ft_strlen(msg));
     write(2, "\n", 1);
-    write(1, RESET , ft_strlen(RESET));
+    write(2, RESET , ft_strlen(RESET));
     exit(1);
 }
 
