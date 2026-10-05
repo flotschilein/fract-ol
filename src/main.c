@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:09:24 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 18:45:53 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/05 18:53:43 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,6 +190,98 @@ void	key_hook(mlx_key_data_t keydata, void *param)
 		fractol->auto_color = !fractol->auto_color;
 }
 
+void	iteration_helper(t_fractol *fractol, double dt)
+{
+	fractol->refine_timer += dt;
+	if (fractol->refine_timer >= REFINE_DELAY)
+	{
+		fractol->refine_timer = 0.0;
+		fractol->iter += REFINE_STEP;
+		if (fractol->iter > fractol->max_iter)
+			fractol->iter = fractol->max_iter;
+		render_fractal(fractol);
+	}
+}
+
+void	resize_helper(t_fractol *fractol, bool *moved)
+{
+	fractol->needs_resize = false;
+	if (fractol->img)
+	{
+		if (!mlx_resize_image(fractol->img, (uint32_t)fractol->win_width,
+				(uint32_t)fractol->win_height))
+			write_error("mlx_resize_image failed");
+		*moved = true;
+	}
+}
+
+void	scroll_helper(t_fractol *fractol, double dt, bool *moved)
+{
+	fractol->scroll_timer += dt;
+	if (fractol->scroll_timer >= SCROLL_SETTLE_DELAY)
+	{
+		apply_zoom(fractol, pow(ZOOM_FACTOR, fractol->scroll_accum),
+			fractol->scroll_anchor_x, fractol->scroll_anchor_y);
+		fractol->scroll_accum = 0.0;
+		fractol->scroll_timer = 0.0;
+		fractol->scroll_pending = false;
+		*moved = true;
+	}
+}
+
+void	move_helper(t_fractol *fractol, double step, bool *moved)
+{
+	if (mlx_is_key_down(fractol->mlx, MLX_KEY_UP)
+		|| mlx_is_key_down(fractol->mlx, MLX_KEY_W))
+	{
+		fractol->offset_y += step;
+		*moved = true;
+	}
+	if (mlx_is_key_down(fractol->mlx, MLX_KEY_DOWN)
+		|| mlx_is_key_down(fractol->mlx, MLX_KEY_S))
+	{
+		fractol->offset_y -= step;
+		*moved = true;
+	}
+	if (mlx_is_key_down(fractol->mlx, MLX_KEY_LEFT)
+		|| mlx_is_key_down(fractol->mlx, MLX_KEY_A))
+	{
+		fractol->offset_x -= step;
+		*moved = true;
+	}
+	if (mlx_is_key_down(fractol->mlx, MLX_KEY_RIGHT)
+		|| mlx_is_key_down(fractol->mlx, MLX_KEY_D))
+	{
+		fractol->offset_x += step;
+		*moved = true;
+	}
+}
+
+void	color_helper(t_fractol *fractol, double dt, bool *redraw)
+{
+	fractol->color_shift += dt * AUTO_COLOR_SPEED;
+	fractol->color_shift = fmod(fractol->color_shift, COLOR_SHIFT_WRAP);
+	*redraw = true;
+}
+
+void	move_helper(t_fractol *fractol)
+{
+	fractol->iter = START_ITER;
+	render_fractal(fractol);
+}
+
+double	get_dt(t_fractol *fractol)
+{
+	double	dt;
+
+	dt = fractol->mlx->delta_time;
+	if (dt < 0.0)
+		dt = 0.0;
+	if (dt > 0.05)
+		dt = 0.05;
+	return (dt);
+}
+
 void	loop_hook(void *param)
 {
 	t_fractol	*fractol;
@@ -199,88 +291,23 @@ void	loop_hook(void *param)
 	bool		redraw;
 
 	fractol = (t_fractol *)param;
-	dt = fractol->mlx->delta_time;
-	if (dt < 0.0)
-		dt = 0.0;
-	if (dt > 0.05)
-		dt = 0.05;
+	dt = get_dt(fractol);
 	step = MOVE_SPEED * dt;
 	moved = false;
 	redraw = false;
-	if (mlx_is_key_down(fractol->mlx, MLX_KEY_UP)
-		|| mlx_is_key_down(fractol->mlx, MLX_KEY_W))
-	{
-		fractol->offset_y += step;
-		moved = true;
-	}
-	if (mlx_is_key_down(fractol->mlx, MLX_KEY_DOWN)
-		|| mlx_is_key_down(fractol->mlx, MLX_KEY_S))
-	{
-		fractol->offset_y -= step;
-		moved = true;
-	}
-	if (mlx_is_key_down(fractol->mlx, MLX_KEY_LEFT)
-		|| mlx_is_key_down(fractol->mlx, MLX_KEY_A))
-	{
-		fractol->offset_x -= step;
-		moved = true;
-	}
-	if (mlx_is_key_down(fractol->mlx, MLX_KEY_RIGHT)
-		|| mlx_is_key_down(fractol->mlx, MLX_KEY_D))
-	{
-		fractol->offset_x += step;
-		moved = true;
-	}
+	move_helper(fractol, step, &moved);
 	if (fractol->scroll_pending)
-	{
-		fractol->scroll_timer += dt;
-		if (fractol->scroll_timer >= SCROLL_SETTLE_DELAY)
-		{
-			apply_zoom(fractol, pow(ZOOM_FACTOR, fractol->scroll_accum),
-				fractol->scroll_anchor_x, fractol->scroll_anchor_y);
-			fractol->scroll_accum = 0.0;
-			fractol->scroll_timer = 0.0;
-			fractol->scroll_pending = false;
-			moved = true;
-		}
-	}
+		scroll_helper(fractol, dt, &moved);
 	if (fractol->needs_resize)
-	{
-		fractol->needs_resize = false;
-		if (fractol->img)
-		{
-			if (!mlx_resize_image(fractol->img, (uint32_t)fractol->win_width,
-					(uint32_t)fractol->win_height))
-				write_error("mlx_resize_image failed");
-			moved = true;
-		}
-	}
+		resize_helper(fractol, &moved);
 	if (fractol->auto_color)
-	{
-		fractol->color_shift += dt * AUTO_COLOR_SPEED;
-		fractol->color_shift = fmod(fractol->color_shift, COLOR_SHIFT_WRAP);
-		redraw = true;
-	}
+		color_helper(fractol, dt, &redraw);
 	if (moved)
-	{
-		fractol->iter = START_ITER;
-		render_fractal(fractol);
-		return ;
-	}
+		move_helper(fractol);
 	if (redraw)
 		render_fractal(fractol);
 	if (fractol->iter < fractol->max_iter)
-	{
-		fractol->refine_timer += dt;
-		if (fractol->refine_timer >= REFINE_DELAY)
-		{
-			fractol->refine_timer = 0.0;
-			fractol->iter += REFINE_STEP;
-			if (fractol->iter > fractol->max_iter)
-				fractol->iter = fractol->max_iter;
-			render_fractal(fractol);
-		}
-	}
+		iteration_helper(fractol, dt);
 }
 
 void	close_hook(void *param)
