@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/08 12:11:50 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/08 12:24:40 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/08 13:25:49 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,20 +56,4 @@ void	close_hook(void *param)
 
 	fractol = (t_fractol *)param;
 	mlx_close_window(fractol->mlx);
-}
-
-/**
- * @brief Cursor callback. Saves the mouse position.
- *
- * @param xpos Mouse position on x.
- * @param ypos Mouse position on y.
- * @param param The fractol state.
- */
-void	cursor_hook(const double xpos, const double ypos, void *param)
-{
-	t_fractol	*fractol;
-
-	fractol = (t_fractol *)param;
-	fractol->mouse_x = (int)xpos;
-	fractol->mouse_y = (int)ypos;
 }

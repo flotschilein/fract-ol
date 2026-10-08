@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:10:18 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/08 13:14:48 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/08 13:25:57 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,8 +102,6 @@ void				set_center(const t_fractol *fractol, double *center_x,
 void				key_hook(const mlx_key_data_t keydata, void *param);
 void				close_hook(void *param);
 void				scroll_hook(const double xdelta, const double ydelta,
-						void *param);
-void				cursor_hook(const double xpos, const double ypos,
 						void *param);
 void				loop_hook(void *param);
 void				resize_hook(const int32_t width, const int32_t height,

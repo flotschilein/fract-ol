@@ -129,7 +129,7 @@ fract-ol/
 │   ├── fractal.c         # Mandelbrot, Julia and Sierpinski iterators
 │   ├── init.c            # default values, argument parsing, window creation
 │   ├── input.c           # key, scroll and resize hooks
-│   ├── input_helpers.c   # colour shift, frame time, close and cursor hooks
+│   ├── input_helpers.c   # colour shift, frame time and close hooks
 │   ├── loop.c            # per-frame update logic
 │   ├── loop_helpers.c    # refinement, resize, scroll and colour steps
 │   ├── main.c            # main(): wires everything together

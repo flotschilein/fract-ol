@@ -29,7 +29,6 @@ int	main(const int argc, const char **argv)
 	mlx_key_hook(fractol.mlx, key_hook, &fractol);
 	mlx_close_hook(fractol.mlx, close_hook, &fractol);
 	mlx_scroll_hook(fractol.mlx, scroll_hook, &fractol);
-	mlx_cursor_hook(fractol.mlx, cursor_hook, &fractol);
 	mlx_loop_hook(fractol.mlx, loop_hook, &fractol);
 	mlx_loop(fractol.mlx);
 	mlx_terminate(fractol.mlx);
