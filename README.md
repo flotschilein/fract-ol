@@ -34,8 +34,9 @@ The result is a fast first image that becomes sharper while you look at it.
 - **Library:** `Libft`, my own version of a subset of libc, used for string
   handling.
 - **Module layout:** one translation unit per concern (`render`, `fractal`,
-  `color`, `view`, `loop`, `input`, `init`, `parse`, `error`) with all
-  prototypes in a single header, `includes/fractol.h`.
+  `color`, `view`, `loop`, `input`, `init`, `parse`, `error`), each split into
+  a public file and a `*_helpers.c` file for its small static-free helpers, with
+  all prototypes in a single header, `includes/fractol.h`.
 - **State:** the entire viewer state lives in one `t_fractol` struct that is
   passed to every callback, so the code has no globals.
 
@@ -117,24 +118,27 @@ Resizing the window re-renders the fractal at the new size.
 
 ```
 fract-ol/
-├── Makefile
+├── Makefile              # custom build system for fractol and MLX42
 ├── README.md
 ├── includes/
-│   ├── colors.h        # terminal colour codes for error output
-│   └── fractol.h       # shared types, defines and all prototypes
+│   ├── colors.h          # terminal colour codes for error output
+│   └── fractol.h         # shared types, defines and all prototypes
 ├── src/
-│   ├── main.c          # main(): wires everything together
-│   ├── init.c          # default values, argument parsing, window creation
-│   ├── error.c         # write_error(): error output + cleanup
-│   ├── parse.c         # parse_double(): strict double parsing
-│   ├── input.c         # every MLX callback (key, mouse, cursor, resize)
-│   ├── loop.c          # per-frame update logic
-│   ├── view.c          # zoom and centre calculations
-│   ├── render.c        # pixel/row drawing loop
-│   ├── fractal.c       # Mandelbrot, Julia and Sierpinski iterators
-│   └── color.c         # iteration count -> RGB colour
-├── Libft/              # personal C library
-└── mlx42/              # cloned automatically by make (not in git)
+│   ├── color.c           # iteration count -> RGB colour
+│   ├── error.c           # write_error(): error output + cleanup
+│   ├── fractal.c         # Mandelbrot, Julia and Sierpinski iterators
+│   ├── init.c            # default values, argument parsing, window creation
+│   ├── input.c           # key, scroll and resize hooks
+│   ├── input_helpers.c   # colour shift, frame time, close and cursor hooks
+│   ├── loop.c            # per-frame update logic
+│   ├── loop_helpers.c    # refinement, resize, scroll and colour steps
+│   ├── main.c            # main(): wires everything together
+│   ├── parse.c           # parse_double(): strict double parsing
+│   ├── render.c          # render_fractal(): the row drawing loop
+│   ├── render_helpers.c  # render data, coordinates and pixel/row helpers
+│   └── view.c            # zoom and centre calculations
+├── Libft/                # personal C library
+└── mlx42/                # cloned automatically by make (not in git)
 ```
 
 ## Resources
