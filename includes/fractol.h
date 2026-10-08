@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:10:18 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/08 13:25:57 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/08 13:44:07 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@
 # include "../Libft/libft.h"
 # include "../mlx42/include/MLX42/MLX42.h"
 # include "colors.h"
+# include <math.h>
 # include <stdbool.h>
 # include <unistd.h>
-# include <math.h>
 
 # define WIN_WIDTH 800
 # define WIN_HEIGHT 800
@@ -94,7 +94,8 @@ typedef struct s_render
 void				write_error(t_fractol *fractol, const char *msg);
 double				parse_double(const char *value);
 void				init_values(t_fractol *fractol);
-void				set_values(const int argc, const char **argv, t_fractol *fractol);
+void				set_values(const int argc, const char **argv,
+						t_fractol *fractol);
 void				apply_zoom(t_fractol *fractol, const double factor,
 						const double anchor_x, const double anchor_y);
 void				set_center(const t_fractol *fractol, double *center_x,
@@ -108,8 +109,10 @@ void				resize_hook(const int32_t width, const int32_t height,
 						void *param);
 void				move_helper(t_fractol *fractol, const double step,
 						bool *moved);
-void				handle_zoom(const mlx_key_data_t keydata, t_fractol *fractol);
-void				color_shift(const mlx_key_data_t keydata, t_fractol *fractol);
+void				handle_zoom(const mlx_key_data_t keydata,
+						t_fractol *fractol);
+void				color_shift(const mlx_key_data_t keydata,
+						t_fractol *fractol);
 double				get_dt(const t_fractol *fractol);
 int					mandelbrot_iter(const double cr, const double ci,
 						const int max_iter);
