@@ -5,13 +5,24 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/10/05 20:07:06 by fbraune           #+#    #+#             */
+/*   Updated: 2026/10/08 12:07:26 by fbraune          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   color.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/05 20:08:34 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 20:18:54 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/08 12:07:20 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/fractol.h"
-
 #include <math.h>
 
 /**
@@ -23,7 +34,8 @@
  * @param shift How far the colours have moved.
  * @return The colour as one RGBA number.
  */
-uint32_t	get_color(int iter, int cur_iter, int max_iter, double shift)
+uint32_t	get_color(const int iter, const int cur_iter, const int max_iter,
+		const double shift)
 {
 	uint8_t	r;
 	uint8_t	g;
