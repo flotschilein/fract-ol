@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/05 19:58:02 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 20:18:54 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/08 12:10:25 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,9 @@ void	init_values(t_fractol *fractol)
  * @param argv The arguments.
  * @param fractol The fractol state to fill.
  */
-void	set_values(int argc, const char **argv, t_fractol *fractol)
+void	set_values(const int argc, const char **argv, t_fractol *fractol)
 {
-	init_values(&*fractol);
+	init_values(fractol);
 	if (argc == 2 && ft_strcmp((char *)argv[1], "Mandelbrot") == 0)
 		fractol->type = MANDELBROT;
 	else if (argc == 2 && ft_strcmp((char *)argv[1], "Sierpinski") == 0)
