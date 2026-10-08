@@ -19,7 +19,7 @@
  * @param argv The arguments.
  * @return 0 when everything closed fine.
  */
-int	main(int argc, const char **argv)
+int	main(const int argc, const char **argv)
 {
 	t_fractol	fractol;
 
