@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/05 19:57:55 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/08 12:08:03 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/08 13:14:47 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
  * @param fractol The fractol state, closes the window. Can be NULL.
  * @param msg The message to print. NULL prints "FATAL ERROR".
  */
-void	write_error(t_fractol *fractol, char *msg)
+void	write_error(t_fractol *fractol, const char *msg)
 {
 	write(2, BOLD_RED, ft_strlen(BOLD_RED));
 	if (!msg)

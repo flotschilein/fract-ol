@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:10:18 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/08 13:04:18 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/08 13:14:48 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,35 +91,44 @@ typedef struct s_render
 	int				y;
 }					t_render;
 
-void				write_error(t_fractol *fractol, char *msg);
+void				write_error(t_fractol *fractol, const char *msg);
 double				parse_double(const char *value);
 void				init_values(t_fractol *fractol);
-void				set_values(int argc, const char **argv, t_fractol *fractol);
-void				apply_zoom(t_fractol *fractol, double factor,
-						double anchor_x, double anchor_y);
+void				set_values(const int argc, const char **argv, t_fractol *fractol);
+void				apply_zoom(t_fractol *fractol, const double factor,
+						const double anchor_x, const double anchor_y);
 void				set_center(const t_fractol *fractol, double *center_x,
 						double *center_y);
-void				key_hook(mlx_key_data_t keydata, void *param);
+void				key_hook(const mlx_key_data_t keydata, void *param);
 void				close_hook(void *param);
-void				scroll_hook(double xdelta, double ydelta, void *param);
-void				cursor_hook(double xpos, double ypos, void *param);
+void				scroll_hook(const double xdelta, const double ydelta,
+						void *param);
+void				cursor_hook(const double xpos, const double ypos,
+						void *param);
 void				loop_hook(void *param);
-void				resize_hook(int32_t width, int32_t height, void *param);
-void				move_helper(t_fractol *fractol, double step, bool *moved);
-void				handle_zoom(mlx_key_data_t keydata, t_fractol *fractol);
-void				color_shift(mlx_key_data_t keydata, t_fractol *fractol);
+void				resize_hook(const int32_t width, const int32_t height,
+						void *param);
+void				move_helper(t_fractol *fractol, const double step,
+						bool *moved);
+void				handle_zoom(const mlx_key_data_t keydata, t_fractol *fractol);
+void				color_shift(const mlx_key_data_t keydata, t_fractol *fractol);
 double				get_dt(const t_fractol *fractol);
-int					mandelbrot_iter(double cr, double ci, int max_iter);
-int					julia_iter(double z[2], const double j[2], int max_iter);
-int					sierpinski_iter(double x, double y, int max_iter);
-uint32_t			get_color(int iter, int cur_iter, int max_iter,
-						double shift);
+int					mandelbrot_iter(const double cr, const double ci,
+						const int max_iter);
+int					julia_iter(double z[2], const double j[2],
+						const int max_iter);
+int					sierpinski_iter(const double x, const double y,
+						const int max_iter);
+uint32_t			get_color(const int iter, const int cur_iter,
+						const int max_iter, const double shift);
 void				render_fractal(t_fractol *fractol);
 void				render_helper(t_fractol *fractol);
-void				color_helper(t_fractol *fractol, double dt, bool *redraw);
-void				scroll_helper(t_fractol *fractol, double dt, bool *moved);
+void				color_helper(t_fractol *fractol, const double dt,
+						bool *redraw);
+void				scroll_helper(t_fractol *fractol, const double dt,
+						bool *moved);
 void				resize_helper(t_fractol *fractol, bool *moved);
-void				iteration_helper(t_fractol *fractol, double dt);
+void				iteration_helper(t_fractol *fractol, const double dt);
 bool				init_render(t_fractol *fractol, t_render *render);
 void				set_coord(t_render *render);
 int					get_pixel_iter(t_render *render);
