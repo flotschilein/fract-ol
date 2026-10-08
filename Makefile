@@ -12,7 +12,7 @@ MLX42_REPO = https://github.com/codam-coding-college/MLX42.git
 INCLUDES = -I includes/ -I $(LIBFT_DIR) -I $(MLX42_DIR)include/
 
 SRC = $(SRC_DIR)main.c $(SRC_DIR)color.c $(SRC_DIR)error.c \
-  $(SRC_DIR)fractal.c $(SRC_DIR)init.c $(SRC_DIR)input.c \
+  $(SRC_DIR)fractal.c $(SRC_DIR)init.c $(SRC_DIR)input.c $(SRC_DIR)input_helpers.c\
   $(SRC_DIR)loop.c $(SRC_DIR)parse.c $(SRC_DIR)render.c $(SRC_DIR)view.c
 
 OBJ = $(SRC:.c=.o)

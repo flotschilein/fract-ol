@@ -109,7 +109,7 @@ void				resize_hook(int32_t width, int32_t height, void *param);
 void				move_helper(t_fractol *fractol, double step, bool *moved);
 void				handle_zoom(mlx_key_data_t keydata, t_fractol *fractol);
 void				color_shift(mlx_key_data_t keydata, t_fractol *fractol);
-double				get_dt(t_fractol *fractol);
+double				get_dt(const t_fractol *fractol);
 int					mandelbrot_iter(double cr, double ci, int max_iter);
 int					julia_iter(double z[2], const double j[2], int max_iter);
 int					sierpinski_iter(double x, double y, int max_iter);
