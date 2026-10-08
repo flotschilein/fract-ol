@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:10:18 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/08 12:26:26 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/08 13:04:18 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,7 @@
 # define INSIDE_COLOR 0x000000FF
 # define BACKGROUND_COLOR 0x1A1A24FF
 
-# define USAGE \
-	"Usage: ./fractol Mandelbrot | ./fractol Sierpinski | \
-./fractol Julia <real> <imaginary>"
+# define USAGE "Usage: ./fractol Mandelbrot | Sierpinski | Julia <r> <i>"
 
 typedef enum s_fractol_type
 {
