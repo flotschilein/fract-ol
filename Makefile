@@ -60,7 +60,7 @@ clean:
 
 fclean: clean
 	make -C $(LIBFT_DIR) fclean
-	rm -rf $(NAME)
+	rm -rf $(NAME) $(MLX42_DIR)
 
 re: fclean all
 
