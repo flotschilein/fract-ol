@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:10:18 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/05 19:54:39 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/08 12:09:30 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ void				handle_zoom(mlx_key_data_t keydata, t_fractol *fractol);
 void				color_shift(mlx_key_data_t keydata, t_fractol *fractol);
 double				get_dt(t_fractol *fractol);
 int					mandelbrot_iter(double cr, double ci, int max_iter);
-int					julia_iter(double z[2], double j[2], int max_iter);
+int					julia_iter(double z[2], const double j[2], int max_iter);
 int					sierpinski_iter(double x, double y, int max_iter);
 uint32_t			get_color(int iter, int cur_iter, int max_iter,
 						double shift);

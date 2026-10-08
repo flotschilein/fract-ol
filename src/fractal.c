@@ -20,7 +20,7 @@
  * @param max_iter Highest number of steps.
  * @return The number of steps that were done.
  */
-int	mandelbrot_iter(double cr, double ci, int max_iter)
+int	mandelbrot_iter(const double cr, const double ci, const int max_iter)
 {
 	double	zr;
 	double	zi;
@@ -48,7 +48,7 @@ int	mandelbrot_iter(double cr, double ci, int max_iter)
  * @param max_iter Highest number of steps.
  * @return The number of steps that were done.
  */
-int	julia_iter(double z[2], double j[2], int max_iter)
+int	julia_iter(double z[2], const double j[2], const int max_iter)
 {
 	double	zr;
 	double	zi;
@@ -79,7 +79,7 @@ int	julia_iter(double z[2], double j[2], int max_iter)
  * @param value Gets the number of the triangle that was hit.
  * @return true if the point fell into the hole.
  */
-static bool	sierpinski_helper(int i, double *u, double *v, int *value)
+static bool	sierpinski_helper(const int i, double *u, double *v, int *value)
 {
 	if (*u + *v <= 0.5)
 	{
@@ -112,7 +112,7 @@ static bool	sierpinski_helper(int i, double *u, double *v, int *value)
  * @param max_iter Highest number of steps.
  * @return The triangle number, or -1 if the point is outside.
  */
-int	sierpinski_iter(double x, double y, int max_iter)
+int	sierpinski_iter(const double x, const double y, const int max_iter)
 {
 	int		i;
 	double	u;
