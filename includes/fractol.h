@@ -5,8 +5,20 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/10/05 19:01:06 by fbraune           #+#    #+#             */
+/*   Updated: 2026/10/08 12:25:09 by fbraune          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   fractol.h                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/03 19:10:18 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/08 12:09:30 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/08 12:18:18 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +30,7 @@
 # include "colors.h"
 # include <stdbool.h>
 # include <unistd.h>
+# include <math.h>
 
 # define WIN_WIDTH 800
 # define WIN_HEIGHT 800
@@ -37,7 +50,8 @@
 # define INSIDE_COLOR 0x000000FF
 # define BACKGROUND_COLOR 0x1A1A24FF
 
-# define USAGE "Usage: ./fractol Mandelbrot | ./fractol Sierpinski | \
+# define USAGE \
+	"Usage: ./fractol Mandelbrot | ./fractol Sierpinski | \
 ./fractol Julia <real> <imaginary>"
 
 typedef enum s_fractol_type
@@ -94,11 +108,10 @@ typedef struct s_render
 void				write_error(t_fractol *fractol, char *msg);
 double				parse_double(const char *value);
 void				init_values(t_fractol *fractol);
-void				set_values(int argc, const char **argv,
-						t_fractol *fractol);
+void				set_values(int argc, const char **argv, t_fractol *fractol);
 void				apply_zoom(t_fractol *fractol, double factor,
 						double anchor_x, double anchor_y);
-void				set_center(t_fractol *fractol, double *center_x,
+void				set_center(const t_fractol *fractol, double *center_x,
 						double *center_y);
 void				key_hook(mlx_key_data_t keydata, void *param);
 void				close_hook(void *param);
@@ -116,5 +129,14 @@ int					sierpinski_iter(double x, double y, int max_iter);
 uint32_t			get_color(int iter, int cur_iter, int max_iter,
 						double shift);
 void				render_fractal(t_fractol *fractol);
-
+void				render_helper(t_fractol *fractol);
+void				color_helper(t_fractol *fractol, double dt, bool *redraw);
+void				scroll_helper(t_fractol *fractol, double dt, bool *moved);
+void				resize_helper(t_fractol *fractol, bool *moved);
+void				iteration_helper(t_fractol *fractol, double dt);
+bool				init_render(t_fractol *fractol, t_render *render);
+void				set_coord(t_render *render);
+int					get_pixel_iter(t_render *render);
+void				draw_pixel(t_render *render);
+void				render_row(t_render *render);
 #endif

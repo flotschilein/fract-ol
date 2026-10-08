@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/05 19:58:10 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/08 12:13:16 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/08 12:24:40 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	move_helper(t_fractol *fractol, const double step, bool *moved)
  * @param keydata The key event.
  * @param fractol The fractol state.
  */
-void	handle_zoom(mlx_key_data_t keydata, t_fractol *fractol)
+void	handle_zoom(const mlx_key_data_t keydata, t_fractol *fractol)
 {
 	if (keydata.key == MLX_KEY_KP_ADD || keydata.key == MLX_KEY_EQUAL)
 	{
@@ -77,7 +77,7 @@ void	handle_zoom(mlx_key_data_t keydata, t_fractol *fractol)
  * @param keydata The key event.
  * @param param The fractol state.
  */
-void	key_hook(mlx_key_data_t keydata, void *param)
+void	key_hook(const mlx_key_data_t keydata, void *param)
 {
 	t_fractol	*fractol;
 
@@ -103,7 +103,7 @@ void	key_hook(mlx_key_data_t keydata, void *param)
  * @param ydelta Wheel movement up and down.
  * @param param The fractol state.
  */
-void	scroll_hook(double xdelta, double ydelta, void *param)
+void	scroll_hook(const double xdelta, const double ydelta, void *param)
 {
 	t_fractol	*fractol;
 
@@ -127,7 +127,7 @@ void	scroll_hook(double xdelta, double ydelta, void *param)
  * @param height New height.
  * @param param The fractol state.
  */
-void	resize_hook(int32_t width, int32_t height, void *param)
+void	resize_hook(const int32_t width, const int32_t height, void *param)
 {
 	t_fractol	*fractol;
 

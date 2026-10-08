@@ -6,7 +6,7 @@
 /*   By: fbraune <fbraune@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/08 12:11:50 by fbraune           #+#    #+#             */
-/*   Updated: 2026/10/08 12:13:29 by fbraune          ###   ########.fr       */
+/*   Updated: 2026/10/08 12:24:40 by fbraune          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
  * @param keydata The key event. Holding SHIFT moves the colours back.
  * @param fractol The fractol state.
  */
-void	color_shift(mlx_key_data_t keydata, t_fractol *fractol)
+void	color_shift(const mlx_key_data_t keydata, t_fractol *fractol)
 {
 	if (keydata.modifier & MLX_SHIFT)
 		fractol->color_shift -= 1.0;
@@ -65,7 +65,7 @@ void	close_hook(void *param)
  * @param ypos Mouse position on y.
  * @param param The fractol state.
  */
-void	cursor_hook(double xpos, double ypos, void *param)
+void	cursor_hook(const double xpos, const double ypos, void *param)
 {
 	t_fractol	*fractol;
 
